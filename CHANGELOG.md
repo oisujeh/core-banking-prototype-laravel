@@ -5,6 +5,149 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.0.0] - 2026-01-28
+
+### 🏢 Multi-Tenancy Release
+
+Transform FinAegis into a **multi-tenant SaaS platform** with team-based data isolation, powered by stancl/tenancy v3.9. This release introduces complete tenant isolation for all domains while maintaining backward compatibility for single-tenant deployments.
+
+### Highlights
+
+| Phase | Deliverable | PRs |
+|-------|-------------|-----|
+| Phase 1 | Foundation POC - stancl/tenancy setup, tenant model, middleware | #328 |
+| Phase 2 | Migration Infrastructure - 14 tenant migration files | #329, #337 |
+| Phase 3 | Event Sourcing Integration - Tenant-aware aggregates & projectors | #330 |
+| Phase 4 | Model Scoping - 83 models with tenant connection trait | #331 |
+| Phase 5 | Queue Job Tenant Context - TenantAwareJob trait | #332 |
+| Phase 6 | WebSocket Channel Authorization - Tenant-scoped broadcasting | #333 |
+| Phase 7 | Filament Admin Tenant Filtering - Admin panel tenant support | #334 |
+| Phase 8 | Data Migration Tooling - Import/export commands | #335 |
+| Phase 9 | Security Audit - Isolation validation tests | #336 |
+
+### Added
+
+#### Multi-Tenancy Foundation
+- **stancl/tenancy v3.9** integration with custom team-based tenancy
+- **Tenant Model** - Links to Teams, supports multiple database strategies
+- **InitializeTenancyByTeam Middleware** - Team membership verification, rate limiting, audit logging
+- **TeamTenantResolver** - Cached tenant resolution with security checks
+
+#### Tenant Database Migrations (14 files)
+- `0001_01_01_000001_create_tenant_accounts_table.php` - Core account tables
+- `0001_01_01_000002_create_tenant_transactions_table.php` - Transaction records
+- `0001_01_01_000003_create_tenant_transfers_table.php` - Transfer tracking
+- `0001_01_01_000004_create_tenant_account_balances_table.php` - Balance projections
+- `0001_01_01_000005_create_tenant_compliance_tables.php` - KYC/AML tables
+- `0001_01_01_000006_create_tenant_banking_tables.php` - Bank connections
+- `0001_01_01_000007_create_tenant_lending_tables.php` - Loan lifecycle
+- `0001_01_01_000008_create_tenant_event_sourcing_tables.php` - Event stores
+- `0001_01_01_000009_create_tenant_exchange_tables.php` - Trading engine
+- `0001_01_01_000010_create_tenant_stablecoin_tables.php` - Stablecoin ops
+- `0001_01_01_000011_create_tenant_wallet_tables.php` - Blockchain wallets
+- `0001_01_01_000012_create_tenant_treasury_tables.php` - Portfolio management
+- `0001_01_01_000013_create_tenant_cgo_tables.php` - Investment platform
+- `0001_01_01_000014_create_tenant_agent_protocol_tables.php` - AI agent protocol
+
+#### Event Sourcing Integration
+- **TenantAwareStoredEvent** - Base class for tenant-scoped events
+- **TenantAwareSnapshot** - Base class for tenant-scoped snapshots
+- **TenantAwareAggregateRoot** - Aggregate root with tenant context
+- **TenantAwareStoredEventRepository** - Tenant-filtered event storage
+- **TenantAwareSnapshotRepository** - Tenant-filtered snapshots
+
+#### Model Scoping
+- **UsesTenantConnection Trait** - Applied to 83 Eloquent models
+- All domain models updated (Account, Banking, Compliance, Exchange, etc.)
+- 16 event sourcing models extend TenantAwareStoredEvent
+- 5 snapshot models extend TenantAwareSnapshot
+
+#### Queue & Background Jobs
+- **TenantAwareJob Trait** - Explicit tenant context tracking
+- Updated AsyncCommandJob, AsyncDomainEventJob, ProcessCustodianWebhook
+- Tenant tags for Laravel Horizon monitoring
+- QueueTenancyBootstrapper enabled in config
+
+#### WebSocket & Broadcasting
+- **TenantChannelAuthorizer** - Tenant-scoped channel authorization
+- **TenantBroadcastEvent Trait** - Tenant-aware event broadcasting
+- Tenant-scoped channel definitions in routes/channels.php
+
+#### Filament Admin Panel
+- **TenantAwareResource Trait** - Automatic tenant scoping for resources
+- **FilamentTenantMiddleware** - Tenant context initialization
+- **TenantSelectorWidget** - UI widget for switching tenants
+- Admin panel tenant filtering across all resources
+
+#### Data Migration Tooling
+- **TenantDataMigrationService** - Core data migration service
+- **MigrateTenantDataCommand** - `php artisan tenant:migrate-data`
+- **ExportTenantDataCommand** - `php artisan tenant:export` (JSON/CSV/SQL)
+- **ImportTenantDataCommand** - `php artisan tenant:import`
+- Migration tracking tables (tenant_data_migrations, imports, exports)
+
+#### Security Features
+- Team membership verification before tenant access
+- Rate limiting (60 attempts/minute) on tenant lookups
+- Audit logging for all tenancy events
+- Explicit 403 responses when tenant required but not found
+- Config-based auto-creation (dev/test only)
+
+### Security
+
+- **TenantIsolationSecurityTest** - 9 structural security tests
+- **CrossTenantAccessPreventionTest** - 17 isolation validation tests
+- Security audit documentation at `docs/security/MULTI_TENANCY_SECURITY_AUDIT.md`
+- Pure unit tests using reflection (no Laravel container dependencies)
+
+### Changed
+
+- Database connections now support: central, tenant, tenant_template
+- Event sourcing repositories are now tenant-aware
+- All financial models use tenant-scoped database connections
+- Queue jobs preserve tenant context across async boundaries
+
+### Migration Notes
+
+1. **New Configuration Files**:
+   ```bash
+   config/tenancy.php      # stancl/tenancy configuration
+   config/multitenancy.php # Custom multi-tenancy settings
+   ```
+
+2. **Run Central Migrations**:
+   ```bash
+   php artisan migrate  # Creates tenants table and domains
+   ```
+
+3. **Run Tenant Migrations** (after creating tenants):
+   ```bash
+   php artisan tenants:migrate
+   ```
+
+4. **Data Migration** (for existing single-tenant data):
+   ```bash
+   php artisan tenant:migrate-data {tenant_id} --tables=accounts,transactions
+   ```
+
+### Upgrade Notes
+
+For existing single-tenant deployments:
+- The default behavior remains unchanged when no tenant is active
+- Multi-tenancy features are opt-in via middleware
+- Existing data can be migrated using the data migration commands
+- See `docs/V2.0.0_MULTI_TENANCY_ARCHITECTURE.md` for detailed upgrade guide
+
+### Breaking Changes
+
+- None for single-tenant deployments
+- Multi-tenant deployments require:
+  - Tenant creation before accessing tenant-scoped resources
+  - Team membership for tenant access
+  - Updated route middleware configuration
+
+---
+
 ## [1.4.1] - 2026-01-27
 
 ### 🐛 Database Cache Connection Fix
@@ -741,7 +884,9 @@ This release marks the transformation of FinAegis from a proprietary platform to
 
 | Version | Date | Highlights |
 |---------|------|------------|
-| **1.4.0** | **In Progress** | **🧪 Test Coverage Expansion** |
+| **2.0.0** | **2026-01-28** | **🏢 Multi-Tenancy** |
+| 1.4.1 | 2026-01-27 | 🐛 Database Cache Connection Fix |
+| 1.4.0 | 2026-01-27 | 🧪 Test Coverage Expansion |
 | 1.3.0 | 2026-01-25 | 🔧 Platform Modularity |
 | 1.2.0 | 2026-01-13 | 🚀 Feature Completion |
 | 1.1.0 | 2026-01-11 | 🔧 Foundation Hardening |
@@ -777,7 +922,10 @@ This is a documentation-focused release with no breaking changes.
 - Run `php artisan migrate` for AI Framework tables
 - Configure AI providers in `config/ai.php`
 
-[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.3.0...HEAD
+[Unreleased]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.4.1...v2.0.0
+[1.4.1]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.4.0...v1.4.1
+[1.4.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.3.0...v1.4.0
 [1.3.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.2.0...v1.3.0
 [1.2.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/FinAegis/core-banking-prototype-laravel/compare/v1.0.0...v1.1.0
