@@ -1,7 +1,7 @@
 # FinAegis Development Continuation Guide
 
 > **Purpose**: Master handoff document for session continuity. **READ THIS FIRST** when resuming development.
-> **Last Updated**: January 11, 2026 (Post-v1.1.0, v1.2.0 in progress)
+> **Last Updated**: January 29, 2026 (v2.0.0 Released, v2.1.0 Planning)
 
 ---
 
@@ -25,9 +25,10 @@ git branch --show-current
 |------|--------|
 | Current Branch | `main` |
 | Open PRs | None |
-| Last Action | v2.0.0: Multi-tenancy architecture plan created |
-| Next Action | Begin v2.0.0 implementation (proof-of-concept spike) |
-| Session Date | January 27, 2026 |
+| Open Issues | #339 (PHPUnit security vulnerability) |
+| Last Action | v2.0.0 fully released with GitHub releases |
+| Next Action | Begin v2.1.0 implementation (hardware wallets POC) |
+| Session Date | January 29, 2026 |
 
 ### v1.4.0 Progress
 | Task | Status |
@@ -56,10 +57,23 @@ git branch --show-current
 | Version | Status | Theme | Key Items |
 |---------|--------|-------|-----------|
 | **v1.1.0** | ✅ RELEASED | Foundation Hardening | PHPStan L8, 5073 tests, 22 Behat |
-| **v1.2.0** | ✅ RELEASED | Feature Completion | Released Jan 13, 2026, AWS SDK fix |
-| **v1.3.0** | ✅ RELEASED | Platform Modularity | Released Jan 25, 2026 (tag: v1.3.0) |
-| **v1.4.0** | ✅ RELEASED | Test Coverage Expansion | Released Jan 27, 2026 (tag: v1.4.0) |
-| v2.0.0 | 📅 Q3-Q4 2026 | Major Evolution | GraphQL, microservices prep |
+| **v1.2.0** | ✅ RELEASED | Feature Completion | Released Jan 13, 2026 |
+| **v1.3.0** | ✅ RELEASED | Platform Modularity | Released Jan 25, 2026 |
+| **v1.4.0** | ✅ RELEASED | Test Coverage Expansion | Released Jan 27, 2026 |
+| **v1.4.1** | ✅ RELEASED | Patch | Database cache connection fix |
+| **v2.0.0** | ✅ RELEASED | Multi-Tenancy | Released Jan 28, 2026, 9 phases |
+| v2.1.0 | 🎯 PLANNING | Platform Enhancement | Hardware wallets, multi-sig, K8s |
+
+### v2.0.0 Completed Phases (All Merged)
+- Phase 1: Foundation POC (#328)
+- Phase 2: Migration Infrastructure (#329, #337)
+- Phase 3: Event Sourcing Integration (#330)
+- Phase 4: Model Scoping - 83 models (#331)
+- Phase 5: Queue Job Tenant Context (#332)
+- Phase 6: WebSocket Channel Authorization (#333)
+- Phase 7: Filament Admin Tenant Filtering (#334)
+- Phase 8: Data Migration Tooling (#335)
+- Phase 9: Security Audit (#336)
 
 ### v1.2.0 Completed Items
 - ✅ Agent Protocol bridges (discovered existing implementation)
