@@ -593,12 +593,308 @@ orderBook.subscribe('BTC/USD', {
 
 ---
 
-## Version 2.2.0 - Future Vision (PLANNED)
+## Version 2.2.0 - Mobile Wallet Application (PLANNED)
 
-**Target**: Q2-Q3 2026
-**Theme**: Industry Leadership
+**Target**: Q1-Q2 2026
+**Theme**: Mobile-First Banking Experience
+**Repository**: `finaegis-mobile` (separate repository)
 
-### Potential Features
+### Overview
+
+Build a production-ready Android/iOS mobile wallet application using **Expo (EAS)** that connects to the FinAegis Core Banking API. The mobile app will provide standard wallet functionality including balance management, top-ups, transfers, and real-time notifications.
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    v2.2.0 MOBILE WALLET ARCHITECTURE                     │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                         │
+│  ┌───────────────────────────────────────────────────────────────────┐ │
+│  │                     MOBILE APP (Expo/React Native)                 │ │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐             │ │
+│  │  │ Wallet  │  │ Top-Up  │  │Transfer │  │ Trading │             │ │
+│  │  │  Home   │  │ Screen  │  │ Screen  │  │ Screen  │             │ │
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘             │ │
+│  │  ┌─────────┐  ┌─────────┐  ┌─────────┐  ┌─────────┐             │ │
+│  │  │  Cards  │  │ History │  │  KYC    │  │Settings │             │ │
+│  │  │  Mgmt   │  │  View   │  │ Upload  │  │ Profile │             │ │
+│  │  └─────────┘  └─────────┘  └─────────┘  └─────────┘             │ │
+│  └───────────────────────────────────────────────────────────────────┘ │
+│                              │                                          │
+│  ┌───────────────────────────▼───────────────────────────────────────┐ │
+│  │                     API LAYER (TypeScript SDK)                     │ │
+│  │  • REST Client   • WebSocket Client   • Push Handler              │ │
+│  └───────────────────────────────────────────────────────────────────┘ │
+│                              │                                          │
+│  ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─│─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ ─ │
+│                              ▼                                          │
+│  ┌───────────────────────────────────────────────────────────────────┐ │
+│  │                 BACKEND ENHANCEMENTS (Core Banking)                │ │
+│  │  • Mobile Auth (Biometric)  • Push Notifications (FCM/APNS)       │ │
+│  │  • Device Management        • WebSocket Broadcasting               │ │
+│  └───────────────────────────────────────────────────────────────────┘ │
+│                                                                         │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+### Phase 1: Backend API Enhancements (2-3 weeks)
+
+#### 1.1 Mobile Device Management
+```php
+// New endpoints for device registration
+POST   /api/mobile/devices                    # Register device
+DELETE /api/mobile/devices/{device_id}        # Unregister device
+GET    /api/mobile/devices                    # List user devices
+
+// Device model tracks:
+- device_id (UUID)
+- user_id (FK)
+- platform (ios/android)
+- push_token (FCM/APNS token)
+- device_name
+- app_version
+- last_active_at
+- biometric_enabled (boolean)
+```
+
+#### 1.2 Push Notification Infrastructure
+```php
+// Firebase Cloud Messaging (FCM) for Android
+// Apple Push Notification Service (APNS) for iOS
+
+// Notification types:
+- transaction.received    # Incoming payment
+- transaction.sent        # Outgoing payment confirmed
+- transaction.failed      # Transaction failure
+- balance.low             # Low balance alert
+- kyc.status_changed      # KYC verification update
+- security.login          # New device login
+- price.alert             # Price movement alert (optional)
+```
+
+#### 1.3 Biometric Authentication
+```php
+// Device-bound authentication
+POST   /api/mobile/auth/biometric/enable     # Enable biometric
+POST   /api/mobile/auth/biometric/verify     # Verify biometric token
+DELETE /api/mobile/auth/biometric/disable    # Disable biometric
+
+// Flow:
+1. User logs in with email/password
+2. Prompts to enable biometric
+3. Stores device-bound key in secure enclave
+4. Future logins use biometric + device key
+```
+
+#### 1.4 WebSocket Broadcasting Activation
+```php
+// Enable Soketi for real-time updates
+// Wire domain events to broadcasts:
+
+AccountBalanceUpdated    → tenant.{id}.accounts
+TransactionCompleted     → tenant.{id}.transactions
+OrderPlaced/Matched      → tenant.{id}.exchange
+```
+
+### Phase 2: Mobile App Foundation (3-4 weeks)
+
+#### 2.1 Technology Stack
+
+| Layer | Technology |
+|-------|------------|
+| **Framework** | Expo SDK 52+ (React Native) |
+| **Build Service** | EAS Build (Expo Application Services) |
+| **State Management** | Zustand + React Query |
+| **Navigation** | Expo Router (file-based) |
+| **UI Components** | NativeWind (Tailwind for RN) + Expo UI |
+| **Secure Storage** | expo-secure-store |
+| **Biometrics** | expo-local-authentication |
+| **Push Notifications** | expo-notifications + FCM/APNS |
+| **WebSocket** | Socket.io or Pusher React Native |
+| **Forms** | React Hook Form + Zod |
+| **Charts** | Victory Native or react-native-charts-wrapper |
+
+#### 2.2 App Screens
+
+```
+finaegis-mobile/
+├── app/                          # Expo Router screens
+│   ├── (auth)/                   # Auth group (unauthenticated)
+│   │   ├── login.tsx
+│   │   ├── register.tsx
+│   │   ├── forgot-password.tsx
+│   │   └── verify-2fa.tsx
+│   ├── (tabs)/                   # Main app (authenticated)
+│   │   ├── index.tsx             # Home/Dashboard
+│   │   ├── wallet.tsx            # Wallet & Balances
+│   │   ├── transactions.tsx      # Transaction History
+│   │   ├── exchange.tsx          # Trading (optional Phase 2)
+│   │   └── settings.tsx          # Settings & Profile
+│   ├── topup/
+│   │   ├── index.tsx             # Top-up methods
+│   │   ├── bank-transfer.tsx     # Bank transfer instructions
+│   │   └── card.tsx              # Card top-up (future)
+│   ├── transfer/
+│   │   ├── index.tsx             # Send money
+│   │   ├── recipient.tsx         # Select recipient
+│   │   ├── amount.tsx            # Enter amount
+│   │   └── confirm.tsx           # Confirm & send
+│   ├── receive/
+│   │   └── index.tsx             # QR code & account details
+│   ├── kyc/
+│   │   ├── index.tsx             # KYC status
+│   │   └── upload.tsx            # Document upload
+│   └── _layout.tsx               # Root layout
+├── components/                    # Shared components
+│   ├── BalanceCard.tsx
+│   ├── TransactionItem.tsx
+│   ├── BiometricPrompt.tsx
+│   └── ...
+├── services/                      # API services
+│   ├── api.ts                    # REST client
+│   ├── websocket.ts              # WebSocket client
+│   └── push.ts                   # Push notification handler
+├── stores/                        # Zustand stores
+│   ├── auth.ts
+│   ├── wallet.ts
+│   └── settings.ts
+└── utils/                         # Utilities
+    ├── formatters.ts
+    ├── validators.ts
+    └── crypto.ts
+```
+
+### Phase 3: Core Features Implementation (4-5 weeks)
+
+#### 3.1 Authentication & Security
+
+| Feature | Description |
+|---------|-------------|
+| Email/Password Login | Standard login with Sanctum tokens |
+| 2FA Support | TOTP verification screen |
+| Biometric Login | Face ID / Fingerprint after initial setup |
+| Session Management | Automatic token refresh, logout on inactivity |
+| Device Binding | Link biometric auth to specific device |
+
+#### 3.2 Wallet & Balances
+
+| Feature | Description |
+|---------|-------------|
+| Multi-Asset Dashboard | Show all asset balances (fiat, crypto, GCU) |
+| Balance Refresh | Pull-to-refresh + real-time WebSocket updates |
+| Asset Details | Tap asset for detailed view with mini-chart |
+| Portfolio Value | Total value in user's preferred currency |
+
+#### 3.3 Top-Up Methods
+
+| Method | Implementation |
+|--------|----------------|
+| Bank Transfer | Display IBAN/account details for manual transfer |
+| Custodian Banks | Paysera, Deutsche Bank integration |
+| Crypto Deposit | Show wallet address with QR code |
+| Card Payment | Future: Stripe integration for card top-ups |
+
+#### 3.4 Transfers & Payments
+
+| Feature | Description |
+|---------|-------------|
+| P2P Transfer | Send to another FinAegis account |
+| External Transfer | Bank transfers via custodian |
+| QR Code Payments | Scan QR to pay, generate QR to receive |
+| Transaction Confirmation | Biometric/PIN confirmation for sends |
+| Transfer History | Filterable transaction list |
+
+#### 3.5 Transaction History
+
+| Feature | Description |
+|---------|-------------|
+| Infinite Scroll | Paginated history with lazy loading |
+| Filters | By date, type, asset, status |
+| Search | Search by reference, recipient, amount |
+| Export | Download CSV/PDF statement |
+| Real-time Updates | Push notification + list refresh |
+
+### Phase 4: Advanced Features (3-4 weeks)
+
+#### 4.1 GCU Trading
+
+| Feature | Description |
+|---------|-------------|
+| Buy GCU | Purchase GCU with fiat/crypto |
+| Sell GCU | Redeem GCU to fiat/crypto |
+| Price Chart | Historical GCU price visualization |
+| Trading Limits | Display user's daily/monthly limits |
+
+#### 4.2 KYC/Compliance
+
+| Feature | Description |
+|---------|-------------|
+| KYC Status | Show current verification level |
+| Document Upload | Camera/gallery for ID documents |
+| Selfie Verification | Liveness check integration |
+| Status Tracking | Push notification on approval/rejection |
+
+#### 4.3 Notifications
+
+| Feature | Description |
+|---------|-------------|
+| Push Notifications | FCM (Android) / APNS (iOS) |
+| In-App Notifications | Notification center with history |
+| Notification Preferences | User can toggle notification types |
+
+### Success Metrics v2.2.0
+
+| Metric | Target |
+|--------|--------|
+| App Store Rating | 4.5+ stars |
+| Crash-Free Sessions | 99.5%+ |
+| Cold Start Time | < 2 seconds |
+| API Response Time | < 500ms (p95) |
+| Push Delivery Rate | > 95% |
+| Biometric Adoption | > 70% of users |
+| Daily Active Users | Track baseline |
+
+### Backend Changes Required (Core Banking)
+
+| File/Feature | Changes |
+|--------------|---------|
+| `app/Models/MobileDevice.php` | New model for device tracking |
+| `database/migrations/` | Mobile devices table |
+| `app/Http/Controllers/Api/MobileController.php` | Device & biometric endpoints |
+| `app/Services/PushNotificationService.php` | FCM/APNS integration |
+| `config/broadcasting.php` | Soketi configuration |
+| `app/Listeners/BroadcastEventListener.php` | Wire events to broadcasts |
+| `.env.example` | Add FCM/APNS credentials |
+
+### New Repository Structure
+
+```
+finaegis-mobile/
+├── .github/
+│   └── workflows/
+│       ├── build-android.yml      # EAS build for Android
+│       ├── build-ios.yml          # EAS build for iOS
+│       └── test.yml               # Jest tests
+├── app/                           # Expo Router pages
+├── assets/                        # Images, fonts
+├── components/                    # Reusable UI components
+├── services/                      # API clients
+├── stores/                        # State management
+├── utils/                         # Helpers
+├── app.json                       # Expo configuration
+├── eas.json                       # EAS Build configuration
+├── package.json
+├── tsconfig.json
+└── README.md
+```
+
+---
+
+## Version 2.3.0 - Industry Leadership (PLANNED)
+
+**Target**: Q3-Q4 2026
+**Theme**: AI & Embedded Finance
+
+### Features (Moved from v2.2.0)
 
 #### AI-Powered Banking
 ```
@@ -782,11 +1078,12 @@ main ─────────●─────────●─────
 | **v1.4.1** | Patch Release | Database Cache Connection Fix | ✅ Released 2026-01-27 |
 | **v2.0.0** | Multi-Tenancy | Team-Based Isolation, 9 Phases | ✅ Released 2026-01-28 |
 | **v2.1.0** | Security & Enterprise | Hardware Wallets, K8s, Security Hardening | ✅ Released 2026-01-30 |
-| **v2.2.0** | Industry Leadership | AI Banking, RegTech, Cross-chain | 🎯 Q2-Q3 2026 |
+| **v2.2.0** | Mobile Wallet App | Expo/EAS Android/iOS, Push Notifications, Biometric Auth | 🎯 Q1-Q2 2026 |
+| **v2.3.0** | Industry Leadership | AI Banking, RegTech, Embedded Finance, DeFi | 🎯 Q3-Q4 2026 |
 
 ---
 
-*Document Version: 2.1*
+*Document Version: 2.2*
 *Created: January 11, 2026*
-*Updated: January 30, 2026 (v2.1.0 Released)*
-*Next Review: After v2.2.0 Planning*
+*Updated: January 30, 2026 (v2.2.0 Mobile App Planned)*
+*Next Review: After v2.2.0 MVP Release*
