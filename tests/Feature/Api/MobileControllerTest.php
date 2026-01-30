@@ -85,7 +85,14 @@ class MobileControllerTest extends TestCase
         $response = $this->withToken($this->token)->postJson('/api/mobile/devices', []);
 
         $response->assertUnprocessable()
-            ->assertJsonValidationErrors(['device_id', 'platform', 'app_version']);
+            ->assertJsonPath('error.code', 'VALIDATION_ERROR')
+            ->assertJsonStructure([
+                'error' => [
+                    'code',
+                    'message',
+                    'details' => ['device_id', 'platform', 'app_version'],
+                ],
+            ]);
     }
 
     public function test_register_device_validates_platform(): void
@@ -97,7 +104,14 @@ class MobileControllerTest extends TestCase
         ]);
 
         $response->assertUnprocessable()
-            ->assertJsonValidationErrors(['platform']);
+            ->assertJsonPath('error.code', 'VALIDATION_ERROR')
+            ->assertJsonStructure([
+                'error' => [
+                    'code',
+                    'message',
+                    'details' => ['platform'],
+                ],
+            ]);
     }
 
     public function test_can_list_user_devices(): void
