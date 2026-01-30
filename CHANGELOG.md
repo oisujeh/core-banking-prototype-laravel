@@ -5,6 +5,79 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.0] - 2026-01-30
+
+### 🔐 Security & Enterprise Features Release
+
+This release delivers enterprise-grade security hardening and infrastructure features, including hardware wallet integration, multi-signature support, real-time WebSocket streaming, and Kubernetes-native deployment.
+
+### Highlights
+
+| Feature | Description | PRs |
+|---------|-------------|-----|
+| Hardware Wallet Integration | Ledger Nano S/X, Trezor One/Model T support | #341 |
+| Multi-Signature Wallets | M-of-N threshold signatures for corporate accounts | #342 |
+| WebSocket Streaming | Real-time order book, NAV, transaction updates | #343 |
+| Kubernetes Native | Helm charts, HPA, Istio service mesh | #344 |
+| Security Hardening | ECDSA, PBKDF2, EIP-2 compliance | #345 |
+
+### Added
+
+#### Hardware Wallet Integration
+- **LedgerSignerService** - Ledger Nano S/X device support
+- **TrezorSignerService** - Trezor One/Model T device support
+- **HardwareWalletManager** - Unified wallet coordination
+- **HardwareWalletController** - REST API for device management
+- Supported chains: Ethereum, Bitcoin, Polygon, BSC
+- BIP44 derivation path support
+- Transaction signing workflows with 5-minute TTL
+
+#### Multi-Signature Wallet Support
+- M-of-N threshold signature schemes (e.g., 2-of-3, 3-of-5)
+- Transaction approval workflows
+- Multi-signer coordination
+- Signature aggregation and verification
+
+#### WebSocket Real-time Streaming
+- Tenant-scoped broadcast channels
+- Real-time order book updates
+- Live NAV calculations
+- Transaction status notifications
+- Portfolio value streaming
+
+#### Kubernetes Native Deployment
+- **Helm Charts** - Complete deployment package
+- **Horizontal Pod Autoscaler** - CPU/memory-based scaling
+- **Istio Service Mesh** - Traffic management, mTLS
+- **Network Policies** - Pod-to-pod security
+- Production and staging value files
+
+### Security
+
+#### Cryptographic Hardening
+- **ECDSA ecrecover** - Proper signature validation with public key recovery
+- **PBKDF2** - 100,000 iteration key derivation
+- **EIP-2** - Signature malleability protection (s-value validation)
+- **Timing-safe comparison** - Prevent timing attacks on key comparison
+- **Curve order validation** - Secp256k1 compliance
+
+### Infrastructure
+
+#### Docker Build Improvements
+- Multi-stage build optimization
+- Alpine PHP 8.4-fpm base image
+- PECL Redis extension compilation
+- Autoconf build dependencies management
+
+### Documentation
+- Updated all documentation to v2.1.0
+- Added Hardware Wallet API documentation
+- Added WebSocket streaming guide
+- Cleaned up archived documentation
+- Updated version badges across all files
+
+---
+
 ## [2.0.0] - 2026-01-28
 
 ### 🏢 Multi-Tenancy Release

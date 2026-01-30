@@ -68,7 +68,7 @@ git branch --show-current
 | **v1.4.0** | ✅ RELEASED | Test Coverage Expansion | Released Jan 27, 2026 |
 | **v1.4.1** | ✅ RELEASED | Patch | Database cache connection fix |
 | **v2.0.0** | ✅ RELEASED | Multi-Tenancy | Released Jan 28, 2026, 9 phases |
-| v2.1.0 | 🚧 IN PROGRESS | Platform Enhancement | HW wallets ✅, Multi-sig ✅, WebSocket ✅, K8s ✅, Security ✅ |
+| **v2.1.0** | ✅ RELEASED | Security & Enterprise | Released Jan 30, 2026 - HW wallets, Multi-sig, WebSocket, K8s, Security |
 
 ### v2.0.0 Completed Phases (All Merged)
 - Phase 1: Foundation POC (#328)

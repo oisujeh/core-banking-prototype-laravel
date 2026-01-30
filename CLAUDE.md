@@ -20,8 +20,8 @@ git status && git branch --show-current
 ### Version Status
 | Version | Status | Key Changes |
 |---------|--------|-------------|
-| v2.1.0 | 🚧 In Development | Security hardening, Hardware wallets, WebSocket streaming |
-| v2.0.0 | ✅ Latest Stable | Multi-Tenancy (stancl/tenancy v3.9) |
+| v2.1.0 | ✅ Current | Security hardening, Hardware wallets, WebSocket, Kubernetes |
+| v2.0.0 | ✅ Released | Multi-Tenancy (stancl/tenancy v3.9) |
 | v1.4.1 | ✅ Released | Database cache connection fix |
 
 ### Key Serena Memories
@@ -101,6 +101,9 @@ app/
 ### Key Services (DON'T RECREATE)
 | Need | Existing Service |
 |------|------------------|
+| Hardware Wallets | `HardwareWalletManager` (Wallet) |
+| Ledger Signing | `LedgerSignerService` (Wallet) |
+| Trezor Signing | `TrezorSignerService` (Wallet) |
 | Webhook Processing | `WebhookProcessorService` (Custodian) |
 | Agent Payments | `AgentPaymentIntegrationService` (AgentProtocol) |
 | Yield Optimization | `YieldOptimizationService` (Treasury) |

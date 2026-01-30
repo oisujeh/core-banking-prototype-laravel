@@ -22,9 +22,16 @@ These documents provide technical guidance on:
 - Cryptocurrency exchange integration
 - Payment processing architecture
 
-## Current Architecture Status (September 2024)
+## Current Architecture Status (January 2026)
 
-### Implemented Architecture Components
+### v2.1.0 Architecture Additions
+- ✅ **Hardware Wallet Integration**: WebUSB/Electron for Ledger/Trezor
+- ✅ **Multi-Signature Architecture**: Threshold signature schemes
+- ✅ **WebSocket Event Streaming**: Real-time tenant-scoped channels
+- ✅ **Kubernetes Native**: Helm charts, HPA, Istio service mesh
+- ✅ **Enhanced Security**: ECDSA ecrecover, PBKDF2 key derivation
+
+### Core Architecture Components
 - ✅ **Domain-Driven Design**: Complete with 8 bounded contexts
 - ✅ **Event Sourcing**: Full implementation with Spatie Laravel Event Sourcing
 - ✅ **CQRS Pattern**: Separate read/write models across all domains

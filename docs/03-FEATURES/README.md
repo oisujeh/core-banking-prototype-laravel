@@ -20,9 +20,21 @@ These documents help users and developers understand:
 - Feature-specific implementation details
 - Business value of each feature
 
-## Current Feature Status (September 2024)
+## Current Feature Status (January 2026)
 
-### Recently Implemented Features
+### v2.1.0 Features (January 30, 2026)
+- ✅ **Hardware Wallet Integration**: Ledger Nano S/X, Trezor One/Model T
+- ✅ **Multi-Signature Wallets**: M-of-N threshold signatures
+- ✅ **Real-time WebSocket Streaming**: Order book, NAV, notifications
+- ✅ **Kubernetes Native Deployment**: Helm charts, HPA, Istio
+- ✅ **Security Hardening**: ECDSA, PBKDF2, EIP-2 compliance
+
+### v2.0.0 Features (January 28, 2026)
+- ✅ **Multi-Tenancy**: Team-based tenant isolation
+- ✅ **Tenant-scoped Event Sourcing**: Isolated event streams
+- ✅ **WebSocket Channel Authorization**: Tenant-aware broadcasting
+
+### Core Platform Features
 - ✅ **CGO (Continuous Growth Offering)**: Complete investment platform with payment processing
 - ✅ **GCU Voting System**: Democratic voting for currency basket composition
 - ✅ **GCU Trading**: Buy/sell operations for Global Currency Unit

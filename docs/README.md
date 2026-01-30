@@ -33,7 +33,9 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 - [Demo Mode](03-FEATURES/DEMO-MODE.md) - Demo environment features
 
 ### API Reference
-- [REST API v2.0](04-API/REST_API_REFERENCE.md) - Complete API documentation
+- [REST API v2.1](04-API/REST_API_REFERENCE.md) - Complete API documentation
+- [Hardware Wallet API](04-API/REST_API_REFERENCE.md#hardware-wallet) - Ledger/Trezor integration
+- [WebSocket Streaming](04-API/REST_API_REFERENCE.md#websocket) - Real-time events
 - [BIAN API](04-API/BIAN_API_DOCUMENTATION.md) - Banking industry standard
 - [Webhook Integration](04-API/WEBHOOK_INTEGRATION.md) - Event notifications
 - [CQRS Implementation](04-API/CQRS_IMPLEMENTATION.md) - Command/Query separation
@@ -92,9 +94,16 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 
 ## Platform Status
 
-- **Version**: 1.4.1 (v2.0.0 Multi-Tenancy merged)
+- **Version**: 2.1.0 (Security & Enterprise Features)
 - **Status**: Demonstration Prototype
-- **Last Updated**: January 2026
+- **Last Updated**: January 30, 2026
+
+### v2.1.0 Features
+- Hardware Wallet Integration (Ledger/Trezor)
+- Multi-Signature Wallet Support
+- Real-time WebSocket Streaming
+- Kubernetes Native Deployment
+- Security Hardening (ECDSA, PBKDF2, EIP-2)
 
 This is an educational prototype demonstrating modern banking architecture patterns. It's not production-ready.
 
