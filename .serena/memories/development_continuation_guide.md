@@ -23,14 +23,15 @@ git branch --show-current
 ### Current Session State (Update After Each Session)
 | Item | Status |
 |------|--------|
-| Current Branch | `main` |
-| Open PRs | None |
+| Current Branch | `feature/v2.1.0-security-hardening` |
+| Open PRs | #345 (Security Hardening - awaiting merge) |
 | Open Issues | None |
-| Last Action | v2.1.0 Hardware Wallet Integration merged (PR #341) |
-| Next Action | Continue v2.1.0 planning (multi-sig, K8s) |
-| Session Date | January 29, 2026 |
+| Last Action | Fixed HW wallet tests, updated docs, cleaned Serena memories |
+| Next Action | Merge PR #345, tag v2.1.0 release |
+| Session Date | January 30, 2026 |
 
 ### Recent Commits This Session
+- `c07a678f` - security: Fix critical signature validation and key derivation vulnerabilities
 - `52bc84b1` - feat: v2.1.0 Hardware Wallet Integration (Ledger/Trezor) (#341)
 - `d0484b80` - Add Buy Me a Coffee username to FUNDING.yml
 - `662d2f45` - security: Fix PHPUnit deserialization vulnerability (CVE-2026-24765)
@@ -67,7 +68,7 @@ git branch --show-current
 | **v1.4.0** | ✅ RELEASED | Test Coverage Expansion | Released Jan 27, 2026 |
 | **v1.4.1** | ✅ RELEASED | Patch | Database cache connection fix |
 | **v2.0.0** | ✅ RELEASED | Multi-Tenancy | Released Jan 28, 2026, 9 phases |
-| v2.1.0 | 🚧 IN PROGRESS | Platform Enhancement | Hardware wallets ✅ (merged), multi-sig, K8s |
+| v2.1.0 | 🚧 IN PROGRESS | Platform Enhancement | HW wallets ✅, Multi-sig ✅, WebSocket ✅, K8s ✅, Security ✅ |
 
 ### v2.0.0 Completed Phases (All Merged)
 - Phase 1: Foundation POC (#328)
@@ -238,7 +239,7 @@ app/Domain/
 - **DDD**: Aggregates, Value Objects, Domain Events
 
 ### Stack
-- PHP 8.4+ / Laravel 12
+- PHP 8.3+ / Laravel 12
 - MySQL 8.0 / Redis
 - Pest PHP / PHPStan Level 8
 - Filament 3.0 / Livewire
