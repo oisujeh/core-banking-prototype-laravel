@@ -160,22 +160,13 @@ jobs:
             ./bin/pest-batch tests/Unit/Filament tests/Unit/Http/Middleware || exit 1
           fi
           
-      - name: Run Security Tests
-        if: always()
-        env:
-          DB_CONNECTION: sqlite
-          DB_DATABASE: ":memory:"
-          CI: true
-          PEST_NO_SORT: true
-        run: |
-          # Run security tests with SQLite to reduce memory usage
-          chmod +x ./bin/pest-batch
-          if [ -d "tests/Security" ]; then
-            ./bin/pest-batch tests/Security || exit 1
-          else
-            echo "Security tests directory not found, skipping"
-          fi
-          
+      # NOTE: Security tests are NOT run here to avoid duplication.
+      # Security tests run comprehensively in 04-security-tests.yml with MySQL:
+      # - Penetration Tests
+      # - Authentication Security Tests
+      # - API Security Tests
+      # - Vulnerability Tests
+
       # Coverage upload disabled since we're not generating coverage to save memory
       # - name: Upload Test Coverage
       #   uses: codecov/codecov-action@v4
