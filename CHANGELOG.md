@@ -5,11 +5,11 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [2.2.0] - 2026-01-31 (In Progress)
+## [2.2.0] - 2026-01-31
 
 ### 📱 Mobile Backend & Biometric Authentication Release
 
-This release delivers complete mobile backend infrastructure with enterprise-grade security, event sourcing integration, and real-time push notifications for mobile wallet applications.
+This release delivers complete mobile backend infrastructure with enterprise-grade security, event sourcing integration, real-time push notifications, and WebSocket broadcasting for mobile wallet applications.
 
 ### Highlights
 
@@ -20,6 +20,8 @@ This release delivers complete mobile backend infrastructure with enterprise-gra
 | Push Notifications | Firebase Cloud Messaging, preference management | #351 |
 | Event Sourcing | Mobile domain events with tenant awareness | #349 |
 | Cross-Domain Integration | Transaction and security event listeners | #352 |
+| WebSocket Broadcasting | Soketi configuration for real-time mobile updates | #360 |
+| CI/CD Optimization | Test parallelization, LazilyRefreshDatabase | #357-359 |
 
 ### Added
 
@@ -86,6 +88,27 @@ New `config/mobile.php`:
 - Device takeover detection with session invalidation
 - IP network validation for challenge responses
 - Sensitive fields hidden in API responses
+
+#### WebSocket Broadcasting (#360)
+- Soketi (Pusher-compatible) configuration for real-time updates
+- Tenant-scoped mobile channel (`tenant.{id}.mobile`)
+- TenantBroadcastEvent integration
+- Broadcasting configuration in `config/broadcasting.php`
+
+### Changed
+
+#### CI/CD Optimization (#357-359)
+- **LazilyRefreshDatabase** - ~40% faster test execution with lazy database refresh
+- **Parallel test execution** - 2 workers for unit tests in CI
+- **Memory optimization** - Increased from 768M to 1G for test stability
+- **Behat optimization** - CI-aware wait times (500ms vs 2-3s)
+- **Security test consolidation** - Removed duplicate test execution
+- **Pipeline parallelization** - Removed sequential job dependencies
+
+#### API Response Standardization (#356)
+- Consistent `error.code` and `error.message` format
+- User-friendly validation messages
+- Standardized HTTP status codes
 
 ### Documentation
 
