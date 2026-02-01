@@ -1212,19 +1212,93 @@ The following backend features are complete and ready for mobile integration:
 | **Commerce** (v2.4.0) | Soulbound tokens, Merchant onboarding, Attestations | ✅ |
 | **TrustCert** (v2.4.0) | Verifiable credentials, Certificate authority | ✅ |
 
+### NEW Backend Domains (v2.5.0)
+
+Based on mobile architecture review, the following new backend domains are required:
+
+#### Phase 1: Card Issuance Domain 🆕
+
+**Purpose**: Enable tap-to-pay at regular shops using stablecoins via virtual cards.
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `CardProvisioningService` | Apple Pay / Google Pay push provisioning | 🚧 |
+| `CardLifecycleService` | Card freeze, cancel, replace operations | 🚧 |
+| `JitFundingService` | Just-in-Time authorization (< 2s latency) | 🚧 |
+| `MarqetaAdapter` | Marqeta card issuer integration | 🚧 |
+| `LithicAdapter` | Lithic card issuer integration | 🚧 |
+| `StripeIssuingAdapter` | Stripe Issuing integration | 🚧 |
+| `AuthorizationWebhook` | Real-time card authorization decisions | 🚧 |
+| Database | `virtual_cards`, `card_authorizations`, `card_settlements` | 🚧 |
+
+**API Endpoints**:
+```
+POST   /api/v1/cards/provision          # Add to Apple/Google Wallet
+GET    /api/v1/cards                    # List user cards
+POST   /api/v1/cards/{id}/freeze        # Freeze card
+DELETE /api/v1/cards/{id}/freeze        # Unfreeze card
+POST   /api/webhooks/card-issuer/auth   # JIT funding webhook
+```
+
+#### Phase 2: Gas Relayer Domain 🆕
+
+**Purpose**: Enable users to send stablecoins without needing ETH/MATIC for gas.
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `GasStationService` | Meta-transaction relayer | 🚧 |
+| `PaymasterService` | ERC-4337 paymaster implementation | 🚧 |
+| `BundlerService` | UserOperation bundling and submission | 🚧 |
+| `FeeCalculationService` | Convert gas cost to stablecoin fee | 🚧 |
+| Database | `sponsored_transactions`, `gas_refunds` | 🚧 |
+| Config | `config/relayer.php` | 🚧 |
+
+**API Endpoints**:
+```
+POST   /api/v1/relayer/sponsor          # Submit meta-transaction
+POST   /api/v1/relayer/estimate         # Estimate gas fee in USDC
+GET    /api/v1/relayer/networks         # Supported networks
+```
+
+#### Phase 3: TrustCert Presentation 🆕
+
+**Purpose**: Enable QR code / Deep Link verification of TrustCert credentials.
+
+| Component | Description | Status |
+|-----------|-------------|--------|
+| `PresentationController` | Generate verifiable presentations | 🚧 |
+| `QrCodeService` | QR code generation for certificates | 🚧 |
+| `DeepLinkService` | Deep link handling for verification | 🚧 |
+
+**API Endpoints**:
+```
+POST   /api/v1/trustcert/{id}/present   # Generate presentation
+GET    /api/v1/trustcert/verify/{token} # Verify presentation
+```
+
 ### Mobile App Development (Separate Repository)
 
 | Phase | Description | Status |
 |-------|-------------|--------|
 | **Foundation** | Expo project, navigation, auth flow | 🚧 |
 | **Wallet** | Balance display, send/receive, QR codes | 🚧 |
-| **Commerce** | Payment scanner, merchant payments | 🚧 |
-| **Privacy** | Shield/unshield flows, privacy settings | 🚧 |
+| **Card Payments** | Push provisioning, tap-to-pay | 🚧 |
+| **Gas Abstraction** | Stablecoin-only transactions | 🚧 |
+| **Privacy** | Shield/unshield (native ZK prover) | 🚧 |
 | **TrustCert** | Certificate application, verification | 🚧 |
 | **Launch** | TestFlight, Play Console, App Store release | 🚧 |
 
+### Mobile Native Modules Required
+
+| Module | Purpose | Technology |
+|--------|---------|------------|
+| `@finaegis/react-native-zk-prover` | ZK proof generation | Rust via JSI |
+| `@finaegis/react-native-wallet-provisioning` | Apple/Google Pay | Native (Swift/Kotlin) |
+| `expo-secure-store` | Secure key storage | Native Keychain/Keystore |
+| `expo-local-authentication` | Biometric auth | Native |
+
 ### Documentation
-- [Mobile App Specification](MOBILE_APP_SPECIFICATION.md) - Complete technical spec
+- [Mobile App Specification](MOBILE_APP_SPECIFICATION.md) - Complete technical spec (v1.2)
 - [Backend Upgrade Plan](BACKEND_UPGRADE_PLAN_v2.4.md) - API integration guide
 
 ---

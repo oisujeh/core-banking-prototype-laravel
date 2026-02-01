@@ -1,8 +1,8 @@
 # FinAegis Mobile Wallet - Technical Specification
 
-**Version**: 1.1
+**Version**: 1.2
 **Date**: February 1, 2026
-**Status**: Ready for Development
+**Status**: Ready for Development (Architecture Review Complete)
 **Target Release**: v2.5.0 (Mobile App Launch)
 
 ---
@@ -480,11 +480,24 @@ interface ITrustCert {
 │  │  └─────────────────────────────────────────────────┘    │    │
 │  │                                                          │    │
 │  │  ┌─────────────────────────────────────────────────┐    │    │
-│  │  │              PRIVACY ENGINE                       │    │    │
+│  │  │              PRIVACY ENGINE (NATIVE)             │    │    │
 │  │  │  ┌─────────────────┐  ┌─────────────────┐       │    │    │
 │  │  │  │   ZK Prover     │  │  Shield Pool    │       │    │    │
-│  │  │  │  (snarkjs/wasm) │  │   Interface     │       │    │    │
+│  │  │  │  (Rust/C++ via  │  │   Interface     │       │    │    │
+│  │  │  │   JSI/FFI)      │  │                 │       │    │    │
+│  │  │  │  ⚠️ BACKGROUND   │  │                 │       │    │    │
+│  │  │  │    THREAD ONLY  │  │                 │       │    │    │
 │  │  │  └─────────────────┘  └─────────────────┘       │    │    │
+│  │  └─────────────────────────────────────────────────┘    │    │
+│  │                                                          │    │
+│  │  ┌─────────────────────────────────────────────────┐    │    │
+│  │  │              GAS ABSTRACTION                     │    │    │
+│  │  │  ┌─────────────────────────────────────────┐    │    │    │
+│  │  │  │  ERC-4337 Account Abstraction           │    │    │    │
+│  │  │  │  • UserOperation signing                │    │    │    │
+│  │  │  │  • Paymaster integration                │    │    │    │
+│  │  │  │  • Fee payment in stablecoins           │    │    │    │
+│  │  │  └─────────────────────────────────────────┘    │    │    │
 │  │  └─────────────────────────────────────────────────┘    │    │
 │  └─────────────────────────────────────────────────────────┘    │
 │                              │                                   │
@@ -602,6 +615,476 @@ async function executePrivacyTransaction(
 
   return result;
 }
+```
+
+### 3.4 Card Issuance & Tokenization (Apple/Google Pay)
+
+> **Requirement**: Users must be able to tap-to-pay using stablecoins at regular retail shops.
+> **Implementation**: Just-In-Time (JIT) Funding via Virtual Card with Push Provisioning.
+
+#### 3.4.1 Architecture Overview
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    CARD PAYMENT ARCHITECTURE                              │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
+│  ┌─────────────┐    ┌──────────────┐    ┌─────────────────┐            │
+│  │  Mobile App │    │ Card Issuer  │    │  Card Network   │            │
+│  │  (Wallet)   │    │ (Marqeta/    │    │ (Visa/MC)       │            │
+│  │             │    │  Lithic)     │    │                 │            │
+│  └──────┬──────┘    └──────┬───────┘    └────────┬────────┘            │
+│         │                  │                      │                     │
+│    1. Provision Card       │                      │                     │
+│    ─────────────────►      │                      │                     │
+│         │                  │                      │                     │
+│    2. Add to Apple/Google  │                      │                     │
+│       Wallet               │                      │                     │
+│    ◄───────────────────────│                      │                     │
+│         │                  │                      │                     │
+│         │              ════════════════════       │                     │
+│         │              USER TAPS AT SHOP          │                     │
+│         │              ════════════════════       │                     │
+│         │                  │                      │                     │
+│         │    3. Authorization Request             │                     │
+│         │         ◄───────────────────────────────│                     │
+│         │                  │                      │                     │
+│  ┌──────▼──────┐           │                      │                     │
+│  │  FinAegis   │    4. JIT Webhook               │                     │
+│  │   Backend   │◄──────────┤                      │                     │
+│  │             │           │                      │                     │
+│  │  Lock USDC  │───────────►                      │                     │
+│  │  for $50    │    5. Approve                    │                     │
+│  └─────────────┘           │──────────────────────►                     │
+│                            │    6. Transaction OK │                     │
+│                                                                           │
+│  LATENCY BUDGET: < 2000ms (Authorization → Approval)                     │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 3.4.2 Provisioning Flow (Push to Wallet)
+
+```typescript
+// 1. User clicks "Add to Apple Wallet"
+interface ProvisioningRequest {
+  deviceId: string;
+  walletType: 'APPLE_PAY' | 'GOOGLE_PAY';
+  cardholderName: string;
+}
+
+// 2. Backend calls Card Issuer and Apple/Google
+interface ProvisioningResponse {
+  encryptedPassData: string;      // Do NOT decrypt on client
+  activationData: string;
+  ephemeralPublicKey: string;
+  certificateChain: string[];
+}
+
+// 3. Pass directly to native APIs
+// iOS: PKAddPaymentPassViewController
+// Android: PushProvisioningClient
+
+// CRITICAL: Never decrypt encryptedPassData on client
+// The native wallet APIs handle decryption securely
+```
+
+#### 3.4.3 JIT Funding Webhook (Backend)
+
+```php
+// Real-time authorization decision (< 2000ms latency budget)
+class JitFundingWebhookController
+{
+    public function authorize(JitFundingRequest $request): JsonResponse
+    {
+        $user = $this->getUserFromCard($request->card_token);
+        $amount = Money::USD($request->amount);
+
+        // 1. Check stablecoin balance
+        $balance = $this->walletService->getBalance($user, 'USDC');
+
+        if ($balance->lessThan($amount)) {
+            return $this->deny('INSUFFICIENT_FUNDS');
+        }
+
+        // 2. Lock funds (create hold)
+        $hold = $this->walletService->createHold($user, 'USDC', $amount, [
+            'authorization_id' => $request->authorization_id,
+            'merchant' => $request->merchant_name,
+        ]);
+
+        // 3. Approve transaction
+        return response()->json([
+            'approved' => true,
+            'hold_id' => $hold->id,
+        ]);
+    }
+}
+```
+
+#### 3.4.4 Supported Card Issuers
+
+| Issuer | Type | Features | Status |
+|--------|------|----------|--------|
+| **Marqeta** | Virtual/Physical | JIT funding, Webhooks, Apple/Google Pay | Planned |
+| **Lithic** | Virtual/Physical | API-first, Sandbox, Push provisioning | Planned |
+| **Stripe Issuing** | Virtual | Simple API, Stripe ecosystem | Planned |
+
+#### 3.4.5 Mobile Implementation
+
+```typescript
+// React Native implementation using native modules
+import { ApplePayProvisioning } from '@finaegis/react-native-wallet-provisioning';
+
+async function addCardToWallet() {
+  // 1. Request provisioning data from backend
+  const response = await api.post('/api/v1/cards/provision', {
+    deviceId: await getDeviceId(),
+    walletType: Platform.OS === 'ios' ? 'APPLE_PAY' : 'GOOGLE_PAY',
+  });
+
+  // 2. Pass DIRECTLY to native API (no decryption)
+  if (Platform.OS === 'ios') {
+    await ApplePayProvisioning.addCard({
+      encryptedPassData: response.encryptedPassData,
+      activationData: response.activationData,
+      ephemeralPublicKey: response.ephemeralPublicKey,
+    });
+  } else {
+    await GooglePayProvisioning.pushProvision(response);
+  }
+}
+```
+
+---
+
+### 3.5 Privacy Shield (Client-Side ZK Proofs)
+
+> **Requirement**: Transactions must be mathematically untraceable (Mixer/Pool).
+> **Critical Constraint**: ZK proof generation is CPU-intensive and MUST NOT run on the main UI thread.
+
+#### 3.5.1 Native Module Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    PRIVACY SHIELD ARCHITECTURE                           │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │                      REACT NATIVE LAYER                          │    │
+│  │  ┌───────────────────────────────────────────────────────────┐  │    │
+│  │  │                     JavaScript/TypeScript                   │  │    │
+│  │  │  • UI Components (non-blocking)                            │  │    │
+│  │  │  • State Management                                        │  │    │
+│  │  │  • API Calls                                               │  │    │
+│  │  └────────────────────────────┬──────────────────────────────┘  │    │
+│  │                               │ JSI (JavaScript Interface)       │    │
+│  │                               ▼                                  │    │
+│  │  ┌───────────────────────────────────────────────────────────┐  │    │
+│  │  │                    NATIVE BRIDGE                           │  │    │
+│  │  │  • @finaegis/react-native-zk-prover                       │  │    │
+│  │  │  • Runs on BACKGROUND THREAD                              │  │    │
+│  │  │  • Progress callbacks to UI                                │  │    │
+│  │  └────────────────────────────┬──────────────────────────────┘  │    │
+│  └───────────────────────────────│──────────────────────────────────┘    │
+│                                  │ FFI (Foreign Function Interface)      │
+│                                  ▼                                       │
+│  ┌─────────────────────────────────────────────────────────────────┐    │
+│  │                      NATIVE LAYER (Rust/C++)                     │    │
+│  │  ┌─────────────────────────────────────────────────────────┐    │    │
+│  │  │  ZK Proof Generation Engine                              │    │    │
+│  │  │  • Groth16 / Plonk prover                               │    │    │
+│  │  │  • Merkle tree operations                                │    │    │
+│  │  │  • Nullifier generation                                  │    │    │
+│  │  │  • Compiled to .so (Android) / .a (iOS)                  │    │    │
+│  │  └─────────────────────────────────────────────────────────┘    │    │
+│  │                                                                   │    │
+│  │  Performance Targets:                                            │    │
+│  │  • iPhone 15 Pro: ~8-12 seconds                                  │    │
+│  │  • iPhone 12: ~15-20 seconds                                     │    │
+│  │  • Pixel 7: ~10-15 seconds                                       │    │
+│  │  • Older devices: Use Delegated Proving                          │    │
+│  └───────────────────────────────────────────────────────────────────┘    │
+│                                                                           │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 3.5.2 Proof Generation Workflow
+
+```typescript
+// CRITICAL: This MUST run on a background thread via native module
+import { ZkProver } from '@finaegis/react-native-zk-prover';
+
+async function generatePrivacyProof(transaction: PrivacyTransaction): Promise<ZkProof> {
+  // 1. Show UI progress indicator (non-blocking)
+  setProofState({ status: 'generating', progress: 0 });
+
+  // 2. Download latest Merkle tree root (~50kb)
+  const merkleRoot = await api.get('/api/privacy/merkle-root');
+
+  // 3. Generate proof on NATIVE BACKGROUND THREAD
+  const proof = await ZkProver.generateProof({
+    type: transaction.type,
+    amount: transaction.amount,
+    token: transaction.token,
+    merkleRoot: merkleRoot.data,
+    privateInputs: {
+      balance: await getShieldedBalance(),
+      nullifierSecret: await getSecureNullifier(),
+    },
+    // Progress callback runs on JS thread (non-blocking)
+    onProgress: (progress) => setProofState({ status: 'generating', progress }),
+  });
+
+  // 4. Submit proof to relayer
+  return proof;
+}
+```
+
+#### 3.5.3 Delegated Proving (Fallback for Older Devices)
+
+```typescript
+// For devices that cannot generate proofs locally (< 4GB RAM)
+interface DelegatedProofRequest {
+  commitment: string;          // User's encrypted balance commitment
+  blindingFactor: string;      // Encrypted with server's public key
+  proofParameters: object;     // What to prove
+}
+
+// The server proves validity WITHOUT knowing the secret
+// Privacy preserved through homomorphic encryption
+async function requestDelegatedProof(params: DelegatedProofRequest): Promise<ZkProof> {
+  const response = await api.post('/api/privacy/delegated-proof', params);
+  return response.proof;
+}
+```
+
+#### 3.5.4 Native Module Requirements
+
+| Requirement | Implementation | Notes |
+|-------------|----------------|-------|
+| **Rust ZK Library** | `circom-compat` / `arkworks` | Compiled to iOS/Android |
+| **JSI Bridge** | `react-native-jsi` | Zero-copy data transfer |
+| **Background Thread** | Native thread pool | Avoid main thread |
+| **Memory Management** | Manual in Rust | Prevent OOM crashes |
+| **Progress Reporting** | Callback to JS | UI stays responsive |
+
+---
+
+### 3.6 Gas Abstraction (Meta-Transactions)
+
+> **Requirement**: Users should NEVER need to hold ETH/MATIC to pay gas fees.
+> **Implementation**: ERC-4337 Account Abstraction or Meta-Transaction Relayer.
+
+#### 3.6.1 Gas Station Architecture
+
+```
+┌─────────────────────────────────────────────────────────────────────────┐
+│                    GAS ABSTRACTION ARCHITECTURE                          │
+├─────────────────────────────────────────────────────────────────────────┤
+│                                                                           │
+│  ┌─────────────────┐                     ┌─────────────────────────┐    │
+│  │   Mobile App    │                     │      Blockchain         │    │
+│  │                 │                     │                         │    │
+│  │  User has:      │                     │  User's Smart Wallet:   │    │
+│  │  • 100 USDC     │                     │  • 100 USDC             │    │
+│  │  • 0 ETH   ❌   │                     │  • 0 ETH                │    │
+│  │                 │                     │                         │    │
+│  │  Wants to send  │                     │                         │    │
+│  │  50 USDC        │                     │                         │    │
+│  └────────┬────────┘                     └──────────────┬──────────┘    │
+│           │                                             │                │
+│           │ 1. Sign UserOperation                       │                │
+│           │    (no gas, just signature)                 │                │
+│           ▼                                             │                │
+│  ┌─────────────────────────────────────────────────────┐│                │
+│  │                  RELAYER SERVICE                    ││                │
+│  │                                                      ││                │
+│  │  1. Receive signed UserOperation                    ││                │
+│  │  2. Calculate gas cost in USDC                      ││                │
+│  │     (e.g., $0.05 gas = 0.05 USDC)                   ││                │
+│  │  3. Submit to bundler with Paymaster                ││                │
+│  │  4. Paymaster pays gas in ETH                       ││                │
+│  │  5. Deduct USDC fee from user's transfer            ││                │
+│  │                                                      ││                │
+│  └──────────────────────────────────────┬──────────────┘│                │
+│                                         │               │                │
+│                                         │ 2. Submit     │                │
+│                                         │    Bundle     │                │
+│                                         ▼               ▼                │
+│                              ┌──────────────────────────────┐            │
+│                              │        ERC-4337             │            │
+│                              │    ENTRYPOINT CONTRACT      │            │
+│                              │                              │            │
+│                              │  • Validates UserOperation   │            │
+│                              │  • Calls Paymaster           │            │
+│                              │  • Executes transfer         │            │
+│                              │                              │            │
+│                              │  Result:                     │            │
+│                              │  User sends 50 USDC          │            │
+│                              │  Pays 0.05 USDC as "gas"     │            │
+│                              │  Never needs ETH ✓           │            │
+│                              └──────────────────────────────┘            │
+│                                                                           │
+└─────────────────────────────────────────────────────────────────────────┘
+```
+
+#### 3.6.2 Backend Implementation
+
+```php
+// app/Domain/Relayer/Services/GasStationService.php
+class GasStationService
+{
+    public function sponsorTransaction(
+        string $userAddress,
+        string $targetContract,
+        string $callData,
+        string $signature
+    ): TransactionReceipt {
+        // 1. Estimate gas cost
+        $gasEstimate = $this->blockchain->estimateGas($callData);
+        $gasCostInWei = $gasEstimate * $this->getGasPrice();
+
+        // 2. Convert to stablecoin fee
+        $usdcFee = $this->convertWeiToUsdc($gasCostInWei);
+
+        // 3. Build UserOperation (ERC-4337)
+        $userOp = new UserOperation([
+            'sender' => $userAddress,
+            'nonce' => $this->getNonce($userAddress),
+            'callData' => $callData,
+            'signature' => $signature,
+            'paymasterAndData' => $this->paymaster->getPaymasterData($usdcFee),
+        ]);
+
+        // 4. Submit to bundler
+        return $this->bundler->submitUserOperation($userOp);
+    }
+}
+```
+
+#### 3.6.3 Mobile Integration
+
+```typescript
+// User experience: Send USDC without ever needing ETH
+async function sendStablecoin(to: string, amount: string, token: 'USDC' | 'USDT') {
+  // 1. Build transaction (user signs, no gas needed)
+  const callData = encodeTransfer(to, amount, token);
+  const signature = await wallet.signUserOperation(callData);
+
+  // 2. Submit to relayer (relayer pays gas)
+  const response = await api.post('/api/v1/relayer/sponsor', {
+    callData,
+    signature,
+  });
+
+  // 3. User pays fee in stablecoins (deducted from transfer)
+  // Example: Send 50 USDC, receive 49.95 USDC (0.05 USDC fee)
+  return response.txHash;
+}
+```
+
+#### 3.6.4 Fee Structure
+
+| Network | Typical Gas Cost | USDC Fee | Notes |
+|---------|-----------------|----------|-------|
+| Polygon | ~$0.01-0.05 | 0.05 USDC | Low-cost default |
+| Arbitrum | ~$0.10-0.30 | 0.30 USDC | L2 with Ethereum security |
+| Ethereum | ~$1-10 | 5.00 USDC | Only for high-value txs |
+
+---
+
+### 3.7 Offline & Optimistic Exchange
+
+> **Requirement**: Mobile networks are unstable; the app must handle disconnections gracefully.
+
+#### 3.7.1 Optimistic UI Patterns
+
+```typescript
+// Exchange with slippage protection and offline handling
+interface QuoteRequest {
+  fromToken: string;
+  toToken: string;
+  amount: string;
+}
+
+interface Quote {
+  id: string;
+  fromAmount: string;
+  toAmount: string;
+  rate: string;
+  validUntil: number;     // Unix timestamp (30 seconds from now)
+  maxSlippage: string;    // e.g., "0.5%"
+}
+
+async function executeExchange(quote: Quote): Promise<ExchangeResult> {
+  // 1. Validate quote hasn't expired
+  if (Date.now() > quote.validUntil * 1000) {
+    throw new QuoteExpiredError('Please request a new quote');
+  }
+
+  // 2. Optimistic UI update (show as pending immediately)
+  updateLocalBalance({
+    [quote.fromToken]: balance[quote.fromToken] - quote.fromAmount,
+    [quote.toToken]: balance[quote.toToken] + quote.toAmount,
+    pending: true,
+  });
+
+  // 3. Queue request if offline
+  if (!navigator.onLine) {
+    await queueOfflineTransaction({
+      type: 'EXCHANGE',
+      quote,
+      queuedAt: Date.now(),
+      expiresAt: quote.validUntil * 1000,
+    });
+
+    return { status: 'QUEUED_OFFLINE' };
+  }
+
+  // 4. Execute exchange
+  try {
+    const result = await api.post('/api/exchange/execute', { quoteId: quote.id });
+    updateLocalBalance({ pending: false });
+    return result;
+  } catch (error) {
+    // 5. Rollback optimistic update on failure
+    rollbackLocalBalance();
+    throw error;
+  }
+}
+```
+
+#### 3.7.2 Offline Queue Management
+
+```typescript
+// Handle reconnection and expired quotes
+async function processOfflineQueue() {
+  const queue = await getOfflineQueue();
+
+  for (const item of queue) {
+    // Auto-invalidate expired quotes
+    if (Date.now() > item.expiresAt) {
+      await removeFromQueue(item.id);
+      notifyUser('Quote expired while offline. Please try again.');
+      continue;
+    }
+
+    try {
+      await executeQueuedTransaction(item);
+      await removeFromQueue(item.id);
+    } catch (error) {
+      // Keep in queue for retry
+      await updateQueueItem(item.id, { retryCount: item.retryCount + 1 });
+    }
+  }
+}
+
+// Listen for reconnection
+NetInfo.addEventListener(state => {
+  if (state.isConnected) {
+    processOfflineQueue();
+  }
+});
 ```
 
 ---
@@ -806,6 +1289,87 @@ async function executePrivacyTransaction(
 ## 5. API Specifications
 
 ### 5.1 New Endpoints Required
+
+#### 5.1.0 Card Issuance APIs (NEW - v2.5.0)
+
+```yaml
+# Provision Virtual Card
+POST /api/v1/cards/provision
+Request:
+  deviceId: string
+  walletType: 'APPLE_PAY' | 'GOOGLE_PAY'
+  cardholderName: string
+Response:
+  cardId: string
+  encryptedPassData: string      # Pass directly to native API
+  activationData: string
+  ephemeralPublicKey: string
+  certificateChain: string[]
+
+# Get User Cards
+GET /api/v1/cards
+Response:
+  cards:
+    - cardId: string
+      last4: string
+      network: 'VISA' | 'MASTERCARD'
+      status: 'ACTIVE' | 'FROZEN' | 'CANCELLED'
+      addedToWallet: boolean
+
+# Freeze/Unfreeze Card
+POST /api/v1/cards/{cardId}/freeze
+DELETE /api/v1/cards/{cardId}/freeze
+
+# JIT Funding Webhook (Card Issuer → Backend)
+POST /api/webhooks/card-issuer/authorization
+Request:
+  authorization_id: string
+  card_token: string
+  amount: number
+  currency: string
+  merchant_name: string
+  merchant_category: string
+Response:
+  approved: boolean
+  hold_id: string
+  decline_reason?: string
+```
+
+#### 5.1.0b Gas Relayer APIs (NEW - v2.5.0)
+
+```yaml
+# Sponsor Transaction (Meta-Transaction)
+POST /api/v1/relayer/sponsor
+Request:
+  userAddress: string
+  targetContract: string
+  callData: string
+  signature: string
+Response:
+  txHash: string
+  gasUsed: number
+  feeCharged: string            # Fee in USDC/USDT
+  feeCurrency: string
+
+# Estimate Gas Fee
+POST /api/v1/relayer/estimate
+Request:
+  targetContract: string
+  callData: string
+Response:
+  estimatedGas: number
+  feeInUsdc: string
+  feeInUsdt: string
+
+# Get Supported Networks
+GET /api/v1/relayer/networks
+Response:
+  networks:
+    - chainId: number
+      name: string
+      feeToken: string
+      averageFee: string
+```
 
 #### 5.1.1 Stablecoin Commerce APIs
 
@@ -1078,13 +1642,43 @@ app/Domain/
 │   │   └── TrustFrameworkInterface.php
 │   └── Events/                      # CertificateIssued, CredentialRevoked
 │
-└── Mobile/                     # ✅ IMPLEMENTED (v2.2.0)
-    ├── Services/
-    │   ├── MobileDeviceService.php
-    │   ├── BiometricAuthenticationService.php
-    │   ├── PushNotificationService.php
-    │   └── MobileSessionService.php
-    └── Events/                 # DeviceRegistered, BiometricVerified
+├── Mobile/                     # ✅ IMPLEMENTED (v2.2.0)
+│   ├── Services/
+│   │   ├── MobileDeviceService.php
+│   │   ├── BiometricAuthenticationService.php
+│   │   ├── PushNotificationService.php
+│   │   └── MobileSessionService.php
+│   └── Events/                 # DeviceRegistered, BiometricVerified
+│
+├── CardIssuance/               # 🚧 PLANNED (v2.5.0)
+│   ├── Services/
+│   │   ├── CardProvisioningService.php     # Apple/Google Pay provisioning
+│   │   ├── CardLifecycleService.php        # Freeze, cancel, replace
+│   │   └── JitFundingService.php           # Just-in-time authorization
+│   ├── Adapters/
+│   │   ├── MarqetaAdapter.php              # Marqeta card issuer
+│   │   ├── LithicAdapter.php               # Lithic card issuer
+│   │   └── StripeIssuingAdapter.php        # Stripe Issuing
+│   ├── Contracts/
+│   │   └── CardIssuerInterface.php
+│   ├── Webhooks/
+│   │   ├── AuthorizationWebhook.php        # Real-time decisioning
+│   │   └── SettlementWebhook.php           # Post-settlement
+│   └── Events/                             # CardProvisioned, AuthorizationApproved
+│
+├── Relayer/                    # 🚧 PLANNED (v2.5.0)
+│   ├── Services/
+│   │   ├── GasStationService.php           # Meta-transaction relayer
+│   │   ├── PaymasterService.php            # ERC-4337 paymaster
+│   │   └── BundlerService.php              # UserOperation bundling
+│   ├── Contracts/
+│   │   ├── PaymasterInterface.php
+│   │   └── BundlerInterface.php
+│   └── Events/                             # TransactionSponsored, GasRefunded
+│
+└── TrustCert/                  # 🚧 ENHANCEMENT (v2.5.0)
+    └── Http/Controllers/Api/
+        └── PresentationController.php      # QR/Deep Link verification
 ```
 
 ### 6.2 Configuration Files
