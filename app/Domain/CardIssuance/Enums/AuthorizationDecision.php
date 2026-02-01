@@ -25,13 +25,13 @@ enum AuthorizationDecision: string
     public function getMessage(): string
     {
         return match ($this) {
-            self::APPROVED => 'Transaction approved',
+            self::APPROVED                    => 'Transaction approved',
             self::DECLINED_INSUFFICIENT_FUNDS => 'Insufficient stablecoin balance',
-            self::DECLINED_CARD_FROZEN => 'Card is frozen',
-            self::DECLINED_CARD_CANCELLED => 'Card has been cancelled',
-            self::DECLINED_LIMIT_EXCEEDED => 'Transaction limit exceeded',
-            self::DECLINED_FRAUD_SUSPECTED => 'Suspicious activity detected',
-            self::DECLINED_MERCHANT_BLOCKED => 'Merchant is blocked',
+            self::DECLINED_CARD_FROZEN        => 'Card is frozen',
+            self::DECLINED_CARD_CANCELLED     => 'Card has been cancelled',
+            self::DECLINED_LIMIT_EXCEEDED     => 'Transaction limit exceeded',
+            self::DECLINED_FRAUD_SUSPECTED    => 'Suspicious activity detected',
+            self::DECLINED_MERCHANT_BLOCKED   => 'Merchant is blocked',
         };
     }
 }

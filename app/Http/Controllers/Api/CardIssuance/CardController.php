@@ -63,8 +63,8 @@ class CardController extends Controller
     public function provision(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'device_id' => 'required|string|max:255',
-            'wallet_type' => 'required|string|in:apple_pay,google_pay',
+            'device_id'       => 'required|string|max:255',
+            'wallet_type'     => 'required|string|in:apple_pay,google_pay',
             'cardholder_name' => 'nullable|string|max:255',
         ]);
 
@@ -73,8 +73,8 @@ class CardController extends Controller
             if ($user === null) {
                 return response()->json([
                     'success' => false,
-                    'error' => [
-                        'code' => 'ERR_AUTH_001',
+                    'error'   => [
+                        'code'    => 'ERR_AUTH_001',
                         'message' => 'Authentication required',
                     ],
                 ], 401);
@@ -99,18 +99,18 @@ class CardController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $provisioningData->toArray(),
+                'data'    => $provisioningData->toArray(),
             ]);
         } catch (Throwable $e) {
             Log::error('Card provisioning failed', [
-                'error' => $e->getMessage(),
+                'error'   => $e->getMessage(),
                 'user_id' => $request->user()?->id,
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => [
-                    'code' => 'ERR_CARD_001',
+                'error'   => [
+                    'code'    => 'ERR_CARD_001',
                     'message' => 'Failed to provision card: ' . $e->getMessage(),
                 ],
             ], 400);
@@ -146,7 +146,7 @@ class CardController extends Controller
         // In production, query from database
         return response()->json([
             'success' => true,
-            'data' => [],
+            'data'    => [],
         ]);
     }
 
@@ -175,8 +175,8 @@ class CardController extends Controller
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'error' => [
-                    'code' => 'ERR_CARD_002',
+                'error'   => [
+                    'code'    => 'ERR_CARD_002',
                     'message' => $e->getMessage(),
                 ],
             ], 400);
@@ -208,8 +208,8 @@ class CardController extends Controller
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'error' => [
-                    'code' => 'ERR_CARD_003',
+                'error'   => [
+                    'code'    => 'ERR_CARD_003',
                     'message' => $e->getMessage(),
                 ],
             ], 400);
@@ -253,8 +253,8 @@ class CardController extends Controller
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'error' => [
-                    'code' => 'ERR_CARD_004',
+                'error'   => [
+                    'code'    => 'ERR_CARD_004',
                     'message' => $e->getMessage(),
                 ],
             ], 400);

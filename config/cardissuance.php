@@ -37,23 +37,23 @@ return [
         ],
 
         'marqeta' => [
-            'driver' => 'marqeta',
-            'base_url' => env('MARQETA_BASE_URL', 'https://sandbox-api.marqeta.com/v3'),
-            'application_token' => env('MARQETA_APPLICATION_TOKEN'),
+            'driver'             => 'marqeta',
+            'base_url'           => env('MARQETA_BASE_URL', 'https://sandbox-api.marqeta.com/v3'),
+            'application_token'  => env('MARQETA_APPLICATION_TOKEN'),
             'admin_access_token' => env('MARQETA_ADMIN_ACCESS_TOKEN'),
-            'webhook_secret' => env('MARQETA_WEBHOOK_SECRET'),
+            'webhook_secret'     => env('MARQETA_WEBHOOK_SECRET'),
         ],
 
         'lithic' => [
-            'driver' => 'lithic',
-            'base_url' => env('LITHIC_BASE_URL', 'https://sandbox.lithic.com/v1'),
-            'api_key' => env('LITHIC_API_KEY'),
+            'driver'         => 'lithic',
+            'base_url'       => env('LITHIC_BASE_URL', 'https://sandbox.lithic.com/v1'),
+            'api_key'        => env('LITHIC_API_KEY'),
             'webhook_secret' => env('LITHIC_WEBHOOK_SECRET'),
         ],
 
         'stripe_issuing' => [
-            'driver' => 'stripe_issuing',
-            'api_key' => env('STRIPE_SECRET'),
+            'driver'         => 'stripe_issuing',
+            'api_key'        => env('STRIPE_SECRET'),
             'webhook_secret' => env('STRIPE_ISSUING_WEBHOOK_SECRET'),
         ],
     ],
@@ -106,16 +106,16 @@ return [
 
     'wallet_provisioning' => [
         'apple_pay' => [
-            'enabled' => env('APPLE_PAY_ENABLED', true),
+            'enabled'          => env('APPLE_PAY_ENABLED', true),
             'certificate_path' => env('APPLE_PAY_CERTIFICATE_PATH'),
-            'key_path' => env('APPLE_PAY_KEY_PATH'),
-            'merchant_id' => env('APPLE_PAY_MERCHANT_ID'),
+            'key_path'         => env('APPLE_PAY_KEY_PATH'),
+            'merchant_id'      => env('APPLE_PAY_MERCHANT_ID'),
         ],
 
         'google_pay' => [
-            'enabled' => env('GOOGLE_PAY_ENABLED', true),
+            'enabled'          => env('GOOGLE_PAY_ENABLED', true),
             'wallet_issuer_id' => env('GOOGLE_PAY_WALLET_ISSUER_ID'),
-            'backend_url' => env('GOOGLE_PAY_BACKEND_URL'),
+            'backend_url'      => env('GOOGLE_PAY_BACKEND_URL'),
         ],
     ],
 ];

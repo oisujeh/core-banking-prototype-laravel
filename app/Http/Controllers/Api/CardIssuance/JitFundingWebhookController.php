@@ -74,16 +74,16 @@ class JitFundingWebhookController extends Controller
         // $this->verifyWebhookSignature($request);
 
         $validated = $request->validate([
-            'authorization_id' => 'required|string',
-            'card_token' => 'required|string',
-            'amount' => 'required|integer|min:1',
-            'currency' => 'required|string|size:3',
-            'merchant_name' => 'required|string',
+            'authorization_id'  => 'required|string',
+            'card_token'        => 'required|string',
+            'amount'            => 'required|integer|min:1',
+            'currency'          => 'required|string|size:3',
+            'merchant_name'     => 'required|string',
             'merchant_category' => 'nullable|string',
-            'merchant_id' => 'nullable|string',
-            'merchant_city' => 'nullable|string',
-            'merchant_country' => 'nullable|string',
-            'timestamp' => 'nullable|string',
+            'merchant_id'       => 'nullable|string',
+            'merchant_city'     => 'nullable|string',
+            'merchant_country'  => 'nullable|string',
+            'timestamp'         => 'nullable|string',
         ]);
 
         try {
@@ -94,25 +94,25 @@ class JitFundingWebhookController extends Controller
 
             Log::info('JIT Authorization processed', [
                 'authorization_id' => $validated['authorization_id'],
-                'approved' => $result['approved'],
-                'latency_ms' => round($latencyMs, 2),
+                'approved'         => $result['approved'],
+                'latency_ms'       => round($latencyMs, 2),
             ]);
 
             return response()->json([
-                'approved' => $result['approved'],
-                'hold_id' => $result['hold_id'],
+                'approved'       => $result['approved'],
+                'hold_id'        => $result['hold_id'],
                 'decline_reason' => $result['approved'] ? null : $result['decision']->getMessage(),
             ]);
         } catch (Throwable $e) {
             Log::error('JIT Authorization failed', [
                 'authorization_id' => $validated['authorization_id'] ?? 'unknown',
-                'error' => $e->getMessage(),
+                'error'            => $e->getMessage(),
             ]);
 
             // On error, decline the transaction for safety
             return response()->json([
-                'approved' => false,
-                'hold_id' => null,
+                'approved'       => false,
+                'hold_id'        => null,
                 'decline_reason' => 'Internal error - transaction declined for safety',
             ]);
         }
@@ -141,9 +141,9 @@ class JitFundingWebhookController extends Controller
     {
         $validated = $request->validate([
             'authorization_id' => 'required|string',
-            'settlement_id' => 'required|string',
-            'final_amount' => 'required|integer',
-            'currency' => 'required|string|size:3',
+            'settlement_id'    => 'required|string',
+            'final_amount'     => 'required|integer',
+            'currency'         => 'required|string|size:3',
         ]);
 
         Log::info('Card settlement received', $validated);

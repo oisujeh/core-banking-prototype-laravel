@@ -30,6 +30,9 @@ final readonly class AuthorizationRequest
         return number_format($this->amountCents / 100, 2, '.', '');
     }
 
+    /**
+     * @param array<string, mixed> $data
+     */
     public static function fromWebhook(array $data): self
     {
         return new self(

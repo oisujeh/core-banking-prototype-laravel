@@ -41,6 +41,9 @@ class DemoBundlerService implements BundlerInterface
         return $userOpHash;
     }
 
+    /**
+     * @return array{status: string, tx_hash: ?string, receipt: ?array<string, mixed>}
+     */
     public function getUserOperationStatus(string $userOpHash): array
     {
         $data = Cache::get("user_op:{$userOpHash}");

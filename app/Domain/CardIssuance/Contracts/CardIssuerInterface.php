@@ -15,6 +15,8 @@ interface CardIssuerInterface
 {
     /**
      * Create a new virtual card for a user.
+     *
+     * @param array<string, mixed> $metadata
      */
     public function createCard(
         string $userId,
@@ -25,6 +27,7 @@ interface CardIssuerInterface
     /**
      * Get provisioning data for Apple Pay / Google Pay.
      *
+     * @param array<string> $certificates
      * @return ProvisioningData Data to pass directly to native wallet APIs
      */
     public function getProvisioningData(

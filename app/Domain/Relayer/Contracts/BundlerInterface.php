@@ -27,7 +27,7 @@ interface BundlerInterface
     /**
      * Get the status of a submitted UserOperation.
      *
-     * @return array{status: string, tx_hash: ?string, receipt: ?array}
+     * @return array{status: string, tx_hash: ?string, receipt: ?array<string, mixed>}
      */
     public function getUserOperationStatus(string $userOpHash): array;
 

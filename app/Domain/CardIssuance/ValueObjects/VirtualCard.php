@@ -13,6 +13,9 @@ use DateTimeImmutable;
  */
 final readonly class VirtualCard
 {
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function __construct(
         public string $cardToken,
         public string $last4,
@@ -31,16 +34,19 @@ final readonly class VirtualCard
         return $this->status->isUsable() && $this->expiresAt > new DateTimeImmutable();
     }
 
+    /**
+     * @return array<string, mixed>
+     */
     public function toArray(): array
     {
         return [
-            'card_token' => $this->cardToken,
-            'last4' => $this->last4,
-            'network' => $this->network->value,
-            'status' => $this->status->value,
+            'card_token'      => $this->cardToken,
+            'last4'           => $this->last4,
+            'network'         => $this->network->value,
+            'status'          => $this->status->value,
             'cardholder_name' => $this->cardholderName,
-            'expires_at' => $this->expiresAt->format('Y-m-d'),
-            'metadata' => $this->metadata,
+            'expires_at'      => $this->expiresAt->format('Y-m-d'),
+            'metadata'        => $this->metadata,
         ];
     }
 }

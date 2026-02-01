@@ -25,6 +25,8 @@ class CardProvisioningService
 
     /**
      * Create a new virtual card for a user.
+     *
+     * @param array<string, mixed> $metadata
      */
     public function createCard(
         string $userId,
@@ -33,15 +35,15 @@ class CardProvisioningService
     ): VirtualCard {
         Log::info('Creating virtual card', [
             'user_id' => $userId,
-            'issuer' => $this->cardIssuer->getName(),
+            'issuer'  => $this->cardIssuer->getName(),
         ]);
 
         $card = $this->cardIssuer->createCard($userId, $cardholderName, $metadata);
 
         Log::info('Virtual card created', [
-            'user_id' => $userId,
+            'user_id'    => $userId,
             'card_token' => $card->cardToken,
-            'last4' => $card->last4,
+            'last4'      => $card->last4,
         ]);
 
         return $card;
@@ -51,6 +53,8 @@ class CardProvisioningService
      * Get provisioning data for adding card to Apple Pay / Google Pay.
      *
      * This data must be passed DIRECTLY to native wallet APIs without modification.
+     *
+     * @param array<string> $certificates
      */
     public function getProvisioningData(
         string $userId,
@@ -60,10 +64,10 @@ class CardProvisioningService
         array $certificates = []
     ): ProvisioningData {
         Log::info('Getting provisioning data', [
-            'user_id' => $userId,
-            'card_token' => $cardToken,
+            'user_id'     => $userId,
+            'card_token'  => $cardToken,
             'wallet_type' => $walletType->value,
-            'device_id' => $deviceId,
+            'device_id'   => $deviceId,
         ]);
 
         // Verify card exists and belongs to user
@@ -72,7 +76,7 @@ class CardProvisioningService
             throw new RuntimeException('Card not found');
         }
 
-        if (!$card->isUsable()) {
+        if (! $card->isUsable()) {
             throw new RuntimeException('Card is not usable');
         }
 
@@ -92,8 +96,8 @@ class CardProvisioningService
         ));
 
         Log::info('Provisioning data generated', [
-            'user_id' => $userId,
-            'card_token' => $cardToken,
+            'user_id'     => $userId,
+            'card_token'  => $cardToken,
             'wallet_type' => $walletType->value,
         ]);
 

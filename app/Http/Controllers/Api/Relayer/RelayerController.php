@@ -69,10 +69,10 @@ class RelayerController extends Controller
     {
         $validated = $request->validate([
             'user_address' => 'required|string|regex:/^0x[a-fA-F0-9]{40}$/',
-            'call_data' => 'required|string|regex:/^0x[a-fA-F0-9]*$/',
-            'signature' => 'required|string|regex:/^0x[a-fA-F0-9]*$/',
-            'network' => 'nullable|string|in:polygon,arbitrum,optimism,base,ethereum',
-            'fee_token' => 'nullable|string|in:USDC,USDT',
+            'call_data'    => 'required|string|regex:/^0x[a-fA-F0-9]*$/',
+            'signature'    => 'required|string|regex:/^0x[a-fA-F0-9]*$/',
+            'network'      => 'nullable|string|in:polygon,arbitrum,optimism,base,ethereum',
+            'fee_token'    => 'nullable|string|in:USDC,USDT',
         ]);
 
         try {
@@ -89,18 +89,18 @@ class RelayerController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $result,
+                'data'    => $result,
             ]);
         } catch (Throwable $e) {
             Log::error('Transaction sponsorship failed', [
-                'error' => $e->getMessage(),
+                'error'        => $e->getMessage(),
                 'user_address' => $validated['user_address'],
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => [
-                    'code' => 'ERR_RELAYER_001',
+                'error'   => [
+                    'code'    => 'ERR_RELAYER_001',
                     'message' => $e->getMessage(),
                 ],
             ], 400);
@@ -142,7 +142,7 @@ class RelayerController extends Controller
     {
         $validated = $request->validate([
             'call_data' => 'required|string|regex:/^0x[a-fA-F0-9]*$/',
-            'network' => 'nullable|string|in:polygon,arbitrum,optimism,base,ethereum',
+            'network'   => 'nullable|string|in:polygon,arbitrum,optimism,base,ethereum',
         ]);
 
         try {
@@ -155,13 +155,13 @@ class RelayerController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $estimate,
+                'data'    => $estimate,
             ]);
         } catch (Throwable $e) {
             return response()->json([
                 'success' => false,
-                'error' => [
-                    'code' => 'ERR_RELAYER_002',
+                'error'   => [
+                    'code'    => 'ERR_RELAYER_002',
                     'message' => $e->getMessage(),
                 ],
             ], 400);
@@ -196,7 +196,7 @@ class RelayerController extends Controller
 
         return response()->json([
             'success' => true,
-            'data' => $networks,
+            'data'    => $networks,
         ]);
     }
 }

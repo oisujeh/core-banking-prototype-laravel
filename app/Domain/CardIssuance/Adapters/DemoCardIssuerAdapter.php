@@ -23,6 +23,9 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
         return 'demo';
     }
 
+    /**
+     * @param array<string, mixed> $metadata
+     */
     public function createCard(
         string $userId,
         string $cardholderName,
@@ -52,6 +55,9 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
         return $card;
     }
 
+    /**
+     * @param array<string> $certificates
+     */
     public function getProvisioningData(
         string $cardToken,
         WalletType $walletType,
@@ -64,7 +70,7 @@ class DemoCardIssuerAdapter implements CardIssuerInterface
             walletType: $walletType,
             encryptedPassData: base64_encode("demo_encrypted_pass_data_{$cardToken}"),
             activationData: base64_encode("demo_activation_data_{$deviceId}"),
-            ephemeralPublicKey: base64_encode("demo_ephemeral_key_" . bin2hex(random_bytes(32))),
+            ephemeralPublicKey: base64_encode('demo_ephemeral_key_' . bin2hex(random_bytes(32))),
             certificateChain: [
                 'demo_certificate_leaf',
                 'demo_certificate_intermediate',

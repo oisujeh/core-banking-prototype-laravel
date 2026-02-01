@@ -43,9 +43,9 @@ class JitFundingService
 
         Log::info('JIT Funding: Processing authorization', [
             'authorization_id' => $request->authorizationId,
-            'amount' => $request->getAmountDecimal(),
-            'currency' => $request->currency,
-            'merchant' => $request->merchantName,
+            'amount'           => $request->getAmountDecimal(),
+            'currency'         => $request->currency,
+            'merchant'         => $request->merchantName,
         ]);
 
         // 1. Get card and user
@@ -54,7 +54,7 @@ class JitFundingService
             return $this->decline($request, AuthorizationDecision::DECLINED_CARD_CANCELLED);
         }
 
-        if (!$card->isUsable()) {
+        if (! $card->isUsable()) {
             $decision = $card->status->value === 'frozen'
                 ? AuthorizationDecision::DECLINED_CARD_FROZEN
                 : AuthorizationDecision::DECLINED_CARD_CANCELLED;
@@ -76,8 +76,8 @@ class JitFundingService
             self::DEFAULT_FUNDING_TOKEN,
             $requiredAmount,
             [
-                'authorization_id' => $request->authorizationId,
-                'merchant' => $request->merchantName,
+                'authorization_id'  => $request->authorizationId,
+                'merchant'          => $request->merchantName,
                 'merchant_category' => $request->merchantCategory,
             ]
         );
@@ -87,8 +87,8 @@ class JitFundingService
 
         Log::info('JIT Funding: Authorization approved', [
             'authorization_id' => $request->authorizationId,
-            'hold_id' => $holdId,
-            'latency_ms' => round($latencyMs, 2),
+            'hold_id'          => $holdId,
+            'latency_ms'       => round($latencyMs, 2),
         ]);
 
         Event::dispatch(new AuthorizationApproved(
@@ -103,7 +103,7 @@ class JitFundingService
         return [
             'approved' => true,
             'decision' => AuthorizationDecision::APPROVED,
-            'hold_id' => $holdId,
+            'hold_id'  => $holdId,
         ];
     }
 
@@ -118,7 +118,7 @@ class JitFundingService
     ): array {
         Log::warning('JIT Funding: Authorization declined', [
             'authorization_id' => $request->authorizationId,
-            'reason' => $decision->value,
+            'reason'           => $decision->value,
         ]);
 
         Event::dispatch(new AuthorizationDeclined(
@@ -133,7 +133,7 @@ class JitFundingService
         return [
             'approved' => false,
             'decision' => $decision,
-            'hold_id' => null,
+            'hold_id'  => null,
         ];
     }
 
@@ -151,6 +151,8 @@ class JitFundingService
     /**
      * Create a hold on user's funds.
      * TODO: Integrate with actual wallet service.
+     *
+     * @param array<string, mixed> $metadata
      */
     private function createHold(
         string $userId,

@@ -12,6 +12,9 @@ use App\Domain\CardIssuance\Enums\WalletType;
  */
 final readonly class ProvisioningData
 {
+    /**
+     * @param array<string> $certificateChain
+     */
     public function __construct(
         public string $cardId,
         public WalletType $walletType,
@@ -25,16 +28,18 @@ final readonly class ProvisioningData
     /**
      * Convert to array for API response.
      * CRITICAL: Client must pass this directly to native APIs without modification.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
         return [
-            'card_id' => $this->cardId,
-            'wallet_type' => $this->walletType->value,
-            'encrypted_pass_data' => $this->encryptedPassData,
-            'activation_data' => $this->activationData,
+            'card_id'              => $this->cardId,
+            'wallet_type'          => $this->walletType->value,
+            'encrypted_pass_data'  => $this->encryptedPassData,
+            'activation_data'      => $this->activationData,
             'ephemeral_public_key' => $this->ephemeralPublicKey,
-            'certificate_chain' => $this->certificateChain,
+            'certificate_chain'    => $this->certificateChain,
         ];
     }
 }

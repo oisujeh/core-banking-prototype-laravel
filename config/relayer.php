@@ -49,42 +49,42 @@ return [
 
     'networks' => [
         'polygon' => [
-            'chain_id' => 137,
-            'rpc_url' => env('POLYGON_RPC_URL', 'https://polygon-rpc.com'),
+            'chain_id'    => 137,
+            'rpc_url'     => env('POLYGON_RPC_URL', 'https://polygon-rpc.com'),
             'entry_point' => '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-            'paymaster' => env('POLYGON_PAYMASTER_ADDRESS'),
+            'paymaster'   => env('POLYGON_PAYMASTER_ADDRESS'),
             'bundler_url' => env('POLYGON_BUNDLER_URL'),
         ],
 
         'arbitrum' => [
-            'chain_id' => 42161,
-            'rpc_url' => env('ARBITRUM_RPC_URL', 'https://arb1.arbitrum.io/rpc'),
+            'chain_id'    => 42161,
+            'rpc_url'     => env('ARBITRUM_RPC_URL', 'https://arb1.arbitrum.io/rpc'),
             'entry_point' => '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-            'paymaster' => env('ARBITRUM_PAYMASTER_ADDRESS'),
+            'paymaster'   => env('ARBITRUM_PAYMASTER_ADDRESS'),
             'bundler_url' => env('ARBITRUM_BUNDLER_URL'),
         ],
 
         'optimism' => [
-            'chain_id' => 10,
-            'rpc_url' => env('OPTIMISM_RPC_URL', 'https://mainnet.optimism.io'),
+            'chain_id'    => 10,
+            'rpc_url'     => env('OPTIMISM_RPC_URL', 'https://mainnet.optimism.io'),
             'entry_point' => '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-            'paymaster' => env('OPTIMISM_PAYMASTER_ADDRESS'),
+            'paymaster'   => env('OPTIMISM_PAYMASTER_ADDRESS'),
             'bundler_url' => env('OPTIMISM_BUNDLER_URL'),
         ],
 
         'base' => [
-            'chain_id' => 8453,
-            'rpc_url' => env('BASE_RPC_URL', 'https://mainnet.base.org'),
+            'chain_id'    => 8453,
+            'rpc_url'     => env('BASE_RPC_URL', 'https://mainnet.base.org'),
             'entry_point' => '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-            'paymaster' => env('BASE_PAYMASTER_ADDRESS'),
+            'paymaster'   => env('BASE_PAYMASTER_ADDRESS'),
             'bundler_url' => env('BASE_BUNDLER_URL'),
         ],
 
         'ethereum' => [
-            'chain_id' => 1,
-            'rpc_url' => env('ETHEREUM_RPC_URL', 'https://eth.llamarpc.com'),
+            'chain_id'    => 1,
+            'rpc_url'     => env('ETHEREUM_RPC_URL', 'https://eth.llamarpc.com'),
             'entry_point' => '0x5FF137D4b0FDCD49DcA30c7CF57E578a026d2789',
-            'paymaster' => env('ETHEREUM_PAYMASTER_ADDRESS'),
+            'paymaster'   => env('ETHEREUM_PAYMASTER_ADDRESS'),
             'bundler_url' => env('ETHEREUM_BUNDLER_URL'),
         ],
     ],

@@ -7,7 +7,6 @@ namespace App\Domain\Relayer\Services;
 use App\Domain\Relayer\Contracts\BundlerInterface;
 use App\Domain\Relayer\Contracts\PaymasterInterface;
 use App\Domain\Relayer\Enums\SupportedNetwork;
-use App\Domain\Relayer\Enums\TransactionStatus;
 use App\Domain\Relayer\Events\TransactionSponsored;
 use App\Domain\Relayer\ValueObjects\UserOperation;
 use Illuminate\Support\Facades\Event;
@@ -45,8 +44,8 @@ class GasStationService
     ): array {
         Log::info('Sponsoring transaction', [
             'user_address' => $userAddress,
-            'network' => $network->value,
-            'fee_token' => $feeToken,
+            'network'      => $network->value,
+            'fee_token'    => $feeToken,
         ]);
 
         // 1. Get nonce for user
@@ -67,7 +66,7 @@ class GasStationService
         $feeAmount = $feeToken === 'USDC' ? $feeEstimate['fee_usdc'] : $feeEstimate['fee_usdt'];
 
         // 5. Check if user has sufficient balance
-        if (!$this->hassufficientBalance($userAddress, $feeToken, $feeAmount)) {
+        if (! $this->hassufficientBalance($userAddress, $feeToken, $feeAmount)) {
             throw new RuntimeException("Insufficient {$feeToken} balance for gas fee");
         }
 
@@ -93,8 +92,8 @@ class GasStationService
 
         Log::info('Transaction sponsored successfully', [
             'user_op_hash' => $userOpHash,
-            'fee_charged' => $feeAmount,
-            'fee_token' => $feeToken,
+            'fee_charged'  => $feeAmount,
+            'fee_token'    => $feeToken,
         ]);
 
         Event::dispatch(new TransactionSponsored(
@@ -106,10 +105,10 @@ class GasStationService
         ));
 
         return [
-            'tx_hash' => '', // Will be available after bundler processes
+            'tx_hash'      => '', // Will be available after bundler processes
             'user_op_hash' => $userOpHash,
-            'gas_used' => $gasEstimate['callGasLimit'] + $gasEstimate['verificationGasLimit'],
-            'fee_charged' => number_format($feeAmount, 6),
+            'gas_used'     => $gasEstimate['callGasLimit'] + $gasEstimate['verificationGasLimit'],
+            'fee_charged'  => number_format($feeAmount, 6),
             'fee_currency' => $feeToken,
         ];
     }
@@ -127,9 +126,9 @@ class GasStationService
 
         return [
             'estimated_gas' => $estimate['gas_estimate'],
-            'fee_usdc' => number_format($estimate['fee_usdc'], 6),
-            'fee_usdt' => number_format($estimate['fee_usdt'], 6),
-            'network' => $network->value,
+            'fee_usdc'      => number_format($estimate['fee_usdc'], 6),
+            'fee_usdt'      => number_format($estimate['fee_usdt'], 6),
+            'network'       => $network->value,
         ];
     }
 
@@ -142,9 +141,9 @@ class GasStationService
     {
         return array_map(
             fn (SupportedNetwork $network) => [
-                'chain_id' => $network->getChainId(),
-                'name' => $network->value,
-                'fee_token' => 'USDC',
+                'chain_id'    => $network->getChainId(),
+                'name'        => $network->value,
+                'fee_token'   => 'USDC',
                 'average_fee' => number_format($network->getAverageGasCostUsd(), 4),
             ],
             SupportedNetwork::cases()
@@ -179,8 +178,8 @@ class GasStationService
     {
         // In production, create a debit transaction
         Log::debug('Fee deducted', [
-            'user' => $userAddress,
-            'token' => $token,
+            'user'   => $userAddress,
+            'token'  => $token,
             'amount' => $amount,
         ]);
     }
@@ -192,10 +191,10 @@ class GasStationService
     {
         // Demo: return reasonable defaults
         return match ($network) {
-            SupportedNetwork::POLYGON => 100_000_000_000, // 100 gwei
+            SupportedNetwork::POLYGON  => 100_000_000_000, // 100 gwei
             SupportedNetwork::ARBITRUM => 1_000_000_000,  // 1 gwei
             SupportedNetwork::OPTIMISM => 1_000_000_000,
-            SupportedNetwork::BASE => 1_000_000_000,
+            SupportedNetwork::BASE     => 1_000_000_000,
             SupportedNetwork::ETHEREUM => 50_000_000_000, // 50 gwei
         };
     }
@@ -206,10 +205,10 @@ class GasStationService
     private function getMaxPriorityFeePerGas(SupportedNetwork $network): int
     {
         return match ($network) {
-            SupportedNetwork::POLYGON => 30_000_000_000, // 30 gwei
+            SupportedNetwork::POLYGON  => 30_000_000_000, // 30 gwei
             SupportedNetwork::ARBITRUM => 100_000_000,   // 0.1 gwei
             SupportedNetwork::OPTIMISM => 100_000_000,
-            SupportedNetwork::BASE => 100_000_000,
+            SupportedNetwork::BASE     => 100_000_000,
             SupportedNetwork::ETHEREUM => 2_000_000_000, // 2 gwei
         };
     }

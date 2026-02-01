@@ -79,21 +79,23 @@ final readonly class UserOperation
 
     /**
      * Convert to array for JSON-RPC calls.
+     *
+     * @return array<string, mixed>
      */
     public function toArray(): array
     {
         return [
-            'sender' => $this->sender,
-            'nonce' => '0x' . dechex($this->nonce),
-            'initCode' => $this->initCode,
-            'callData' => $this->callData,
-            'callGasLimit' => '0x' . dechex($this->callGasLimit),
+            'sender'               => $this->sender,
+            'nonce'                => '0x' . dechex($this->nonce),
+            'initCode'             => $this->initCode,
+            'callData'             => $this->callData,
+            'callGasLimit'         => '0x' . dechex($this->callGasLimit),
             'verificationGasLimit' => '0x' . dechex($this->verificationGasLimit),
-            'preVerificationGas' => '0x' . dechex($this->preVerificationGas),
-            'maxFeePerGas' => '0x' . dechex($this->maxFeePerGas),
+            'preVerificationGas'   => '0x' . dechex($this->preVerificationGas),
+            'maxFeePerGas'         => '0x' . dechex($this->maxFeePerGas),
             'maxPriorityFeePerGas' => '0x' . dechex($this->maxPriorityFeePerGas),
-            'paymasterAndData' => $this->paymasterAndData,
-            'signature' => $this->signature,
+            'paymasterAndData'     => $this->paymasterAndData,
+            'signature'            => $this->signature,
         ];
     }
 }

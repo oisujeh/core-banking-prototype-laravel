@@ -74,9 +74,9 @@ class PresentationController extends Controller
     public function present(Request $request, string $certificateId): JsonResponse
     {
         $validated = $request->validate([
-            'requested_claims' => 'nullable|array',
+            'requested_claims'   => 'nullable|array',
             'requested_claims.*' => 'string',
-            'validity_minutes' => 'nullable|integer|min:1|max:60',
+            'validity_minutes'   => 'nullable|integer|min:1|max:60',
         ]);
 
         try {
@@ -88,18 +88,18 @@ class PresentationController extends Controller
 
             return response()->json([
                 'success' => true,
-                'data' => $presentation,
+                'data'    => $presentation,
             ]);
         } catch (Throwable $e) {
             Log::error('Presentation generation failed', [
                 'certificate_id' => $certificateId,
-                'error' => $e->getMessage(),
+                'error'          => $e->getMessage(),
             ]);
 
             return response()->json([
                 'success' => false,
-                'error' => [
-                    'code' => 'ERR_CERT_506',
+                'error'   => [
+                    'code'    => 'ERR_CERT_506',
                     'message' => $e->getMessage(),
                 ],
             ], 400);
@@ -147,7 +147,7 @@ class PresentationController extends Controller
 
             return response()->json([
                 'success' => $result['valid'],
-                'data' => $result,
+                'data'    => $result,
             ]);
         } catch (Throwable $e) {
             Log::error('Presentation verification failed', [
@@ -157,7 +157,7 @@ class PresentationController extends Controller
 
             return response()->json([
                 'success' => false,
-                'data' => [
+                'data'    => [
                     'valid' => false,
                     'error' => 'Verification failed: ' . $e->getMessage(),
                 ],
