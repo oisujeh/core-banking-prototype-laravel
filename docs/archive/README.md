@@ -43,11 +43,14 @@ For up-to-date information, please refer to:
 
 ## Version History
 
-- **v2.1.0** (January 30, 2026): Current - Security & Enterprise Features
+- **v2.4.0** (February 1, 2026): Current - Privacy & Identity (Key Management, TrustCert)
+- **v2.3.0** (February 1, 2026): Industry Leadership (AI, RegTech, BaaS)
+- **v2.2.0** (January 31, 2026): Mobile Backend Infrastructure
+- **v2.1.0** (January 30, 2026): Security & Enterprise Features
 - **v2.0.0** (January 28, 2026): Multi-Tenancy
 - **v1.4.x** (January 27, 2026): Test Coverage & Patches
 
 ---
 
-*Last Updated: January 30, 2026*
-*Cleanup performed for v2.1.0 release*
+*Last Updated: February 1, 2026*
+*Cleanup performed for v2.4.0 release*

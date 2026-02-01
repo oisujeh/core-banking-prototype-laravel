@@ -1,9 +1,9 @@
 # FinAegis Mobile Wallet - Technical Specification
 
-**Version**: 1.0
-**Date**: February 2026
-**Status**: Draft for Review
-**Target Release**: v2.4.0 (Q3 2026)
+**Version**: 1.1
+**Date**: February 1, 2026
+**Status**: Ready for Development
+**Target Release**: v2.5.0 (Mobile App Launch)
 
 ---
 
@@ -997,74 +997,109 @@ Events:
 
 ---
 
-## 6. Backend Upgrade Plan
+## 6. Backend Implementation Status
 
-### 6.1 New Domains Required
+### 6.1 Domain Status (v2.4.0 Complete)
+
+The following domains have been implemented and are ready for mobile integration:
 
 ```
 app/Domain/
-├── Privacy/                    # NEW DOMAIN
-│   ├── Models/
-│   │   ├── ShieldedBalance.php
-│   │   ├── ShieldTransaction.php
-│   │   ├── PrivacyProof.php
-│   │   └── AuditVaultEntry.php
+├── KeyManagement/              # ✅ IMPLEMENTED (v2.4.0 Phase 1)
+│   ├── Enums/
+│   │   ├── ShardType.php       # device, auth, recovery
+│   │   └── ShardStatus.php     # active, revoked, used
+│   ├── ValueObjects/
+│   │   ├── KeyShard.php        # Immutable shard representation
+│   │   └── ReconstructedKey.php
 │   ├── Services/
-│   │   ├── PrivacyPoolService.php
-│   │   ├── ZkProverService.php
-│   │   ├── ProofOfInnocenceService.php
-│   │   └── AuditVaultService.php
+│   │   ├── ShamirService.php   # 2-of-3 threshold splitting
+│   │   ├── EncryptionService.php
+│   │   ├── KeyReconstructionService.php
+│   │   └── ShardDistributionService.php
+│   ├── HSM/
+│   │   ├── DemoHsmProvider.php
+│   │   └── HsmIntegrationService.php
+│   └── Events/                 # Event-sourced key lifecycle
+│
+├── Privacy/                    # ✅ IMPLEMENTED (v2.4.0 Phase 2)
+│   ├── Enums/
+│   │   ├── ProofType.php       # ownership, balance, identity, etc.
+│   │   └── PrivacyLevel.php    # transparent, shielded, selective
+│   ├── ValueObjects/
+│   │   ├── ZkProof.php
+│   │   └── SelectiveDisclosure.php
+│   ├── Services/
+│   │   ├── ZkKycService.php    # Verify KYC without exposing PII
+│   │   ├── SelectiveDisclosureService.php
+│   │   ├── DemoZkProver.php
+│   │   └── ProofOfInnocenceService.php  # RAILGUN-style compliance
+│   └── Events/                 # ZkKycVerified, ProofOfInnocenceGenerated
+│
+├── Commerce/                   # ✅ IMPLEMENTED (v2.4.0 Phase 3)
+│   ├── Enums/
+│   │   ├── TokenType.php       # identity, access, achievement, etc.
+│   │   ├── MerchantStatus.php  # State machine: pending → verified → active
+│   │   ├── AttestationType.php
+│   │   └── CredentialType.php
+│   ├── ValueObjects/
+│   │   ├── SoulboundToken.php
+│   │   ├── PaymentAttestation.php
+│   │   └── VerifiableCredential.php
+│   ├── Services/
+│   │   ├── SoulboundTokenService.php
+│   │   ├── MerchantOnboardingService.php
+│   │   ├── PaymentAttestationService.php
+│   │   └── CredentialIssuanceService.php
 │   ├── Contracts/
-│   │   └── PrivacyPoolInterface.php
-│   └── Events/
-│       ├── FundsShielded.php
-│       ├── FundsUnshielded.php
-│       └── PrivateTransferExecuted.php
+│   │   ├── TokenIssuerInterface.php
+│   │   └── AttestationServiceInterface.php
+│   └── Events/                 # SoulboundTokenIssued, MerchantOnboarded
 │
-├── Commerce/                   # NEW DOMAIN
-│   ├── Models/
-│   │   ├── Merchant.php
-│   │   ├── PaymentRequest.php
-│   │   ├── StablecoinPayment.php
-│   │   └── Settlement.php
+├── TrustCert/                  # ✅ IMPLEMENTED (v2.4.0 Phase 4)
+│   ├── Enums/
+│   │   ├── CertificateStatus.php    # pending, active, suspended, revoked, expired
+│   │   ├── TrustLevel.php           # unknown, basic, verified, high, ultimate
+│   │   ├── RevocationReason.php     # RFC 5280 compliant
+│   │   └── IssuerType.php           # root_ca, intermediate_ca, trusted_issuer
+│   ├── ValueObjects/
+│   │   ├── Certificate.php          # Digital certificate with fingerprint
+│   │   ├── RevocationEntry.php      # StatusList2021 compatible
+│   │   ├── TrustedIssuer.php
+│   │   └── TrustChain.php           # Chain of trust validation
 │   ├── Services/
-│   │   ├── PaymentRequestService.php
-│   │   ├── PaymentExecutionService.php
-│   │   ├── SettlementService.php
-│   │   └── MerchantOnboardingService.php
-│   └── Events/
-│       ├── PaymentReceived.php
-│       └── SettlementCompleted.php
-│
-├── TrustCert/                  # NEW DOMAIN
-│   ├── Models/
-│   │   ├── Certificate.php
-│   │   ├── CertificateApplication.php
-│   │   ├── VerificationDocument.php
-│   │   └── CertificateRevocation.php
-│   ├── Services/
-│   │   ├── CertificateIssuanceService.php
-│   │   ├── VerificationService.php
-│   │   ├── BlockchainMintService.php
-│   │   └── ZkVerificationService.php
+│   │   ├── CertificateAuthorityService.php  # Internal CA
+│   │   ├── VerifiableCredentialService.php  # W3C VC standard
+│   │   ├── RevocationRegistryService.php    # Revocation tracking
+│   │   └── TrustFrameworkService.php        # Multi-issuer trust
 │   ├── Contracts/
-│   │   └── CertificateVerifierInterface.php
-│   └── SmartContracts/
-│       └── TrustCertSBT.sol
+│   │   ├── CertificateAuthorityInterface.php
+│   │   ├── RevocationRegistryInterface.php
+│   │   └── TrustFrameworkInterface.php
+│   └── Events/                      # CertificateIssued, CredentialRevoked
 │
-└── KeyManagement/              # ENHANCED DOMAIN
-    ├── Models/
-    │   ├── KeyShard.php
-    │   └── RecoveryBackup.php
+└── Mobile/                     # ✅ IMPLEMENTED (v2.2.0)
     ├── Services/
-    │   ├── ShamirService.php
-    │   ├── KeyReconstructionService.php
-    │   └── RecoveryService.php
-    └── HSM/
-        └── HsmIntegrationService.php
+    │   ├── MobileDeviceService.php
+    │   ├── BiometricAuthenticationService.php
+    │   ├── PushNotificationService.php
+    │   └── MobileSessionService.php
+    └── Events/                 # DeviceRegistered, BiometricVerified
 ```
 
-### 6.2 Database Migrations
+### 6.2 Configuration Files
+
+| File | Purpose | Status |
+|------|---------|--------|
+| `config/keymanagement.php` | HSM, sharding, encryption settings | ✅ |
+| `config/privacy.php` | ZK circuits, selective disclosure, POI | ✅ |
+| `config/commerce.php` | SBT, merchant tiers, attestation | ✅ |
+| `config/trustcert.php` | CA, credentials, revocation, trust framework | ✅ |
+| `config/mobile.php` | Device limits, biometrics, push providers | ✅ |
+
+### 6.3 Database Migrations (Mobile App Specific)
+
+The following migrations are needed for mobile app features beyond the existing backend domains:
 
 ```php
 // 2026_02_XX_000001_create_privacy_tables.php
@@ -1301,7 +1336,186 @@ Schema::create('certificate_applications', function (Blueprint $table) {
 
 ---
 
-## Appendix A: Glossary
+## Appendix A: API Error Code Catalog
+
+### Error Response Format
+
+All API errors follow a consistent format:
+
+```json
+{
+  "success": false,
+  "error": {
+    "code": "ERR_AUTH_001",
+    "message": "Authentication token has expired",
+    "details": {
+      "expired_at": "2026-02-01T10:30:00Z"
+    }
+  },
+  "request_id": "req_abc123"
+}
+```
+
+### Error Code Ranges
+
+| Range | Category | Description |
+|-------|----------|-------------|
+| `ERR_AUTH_0XX` | Authentication | Login, tokens, sessions |
+| `ERR_DEVICE_1XX` | Device Management | Registration, biometrics |
+| `ERR_WALLET_2XX` | Wallet Operations | Balances, transactions |
+| `ERR_PRIVACY_3XX` | Privacy Layer | Shield/unshield, ZK proofs |
+| `ERR_COMMERCE_4XX` | Commerce | Payments, merchants |
+| `ERR_CERT_5XX` | TrustCert | Certificates, verification |
+| `ERR_SYSTEM_9XX` | System | Rate limiting, maintenance |
+
+### Authentication Errors (ERR_AUTH_0XX)
+
+| Code | HTTP | Message | Recovery Action |
+|------|------|---------|-----------------|
+| `ERR_AUTH_001` | 401 | Token expired | Refresh token or re-authenticate |
+| `ERR_AUTH_002` | 401 | Invalid token | Re-authenticate |
+| `ERR_AUTH_003` | 401 | Session not found | Re-authenticate |
+| `ERR_AUTH_004` | 403 | Biometric required | Prompt biometric |
+| `ERR_AUTH_005` | 403 | Device not registered | Register device first |
+| `ERR_AUTH_006` | 429 | Too many login attempts | Wait and retry |
+| `ERR_AUTH_007` | 403 | Account suspended | Contact support |
+
+### Device Errors (ERR_DEVICE_1XX)
+
+| Code | HTTP | Message | Recovery Action |
+|------|------|---------|-----------------|
+| `ERR_DEVICE_101` | 400 | Device already registered | Use existing device |
+| `ERR_DEVICE_102` | 400 | Device limit reached | Remove old device |
+| `ERR_DEVICE_103` | 400 | Biometric not available | Use password fallback |
+| `ERR_DEVICE_104` | 400 | Invalid biometric signature | Retry biometric |
+| `ERR_DEVICE_105` | 400 | Push token invalid | Re-register push |
+
+### Wallet Errors (ERR_WALLET_2XX)
+
+| Code | HTTP | Message | Recovery Action |
+|------|------|---------|-----------------|
+| `ERR_WALLET_201` | 400 | Insufficient balance | Reduce amount or add funds |
+| `ERR_WALLET_202` | 400 | Invalid address | Verify recipient address |
+| `ERR_WALLET_203` | 400 | Transaction pending | Wait for confirmation |
+| `ERR_WALLET_204` | 400 | Gas estimation failed | Retry with higher gas |
+| `ERR_WALLET_205` | 400 | Nonce conflict | Retry transaction |
+| `ERR_WALLET_206` | 503 | Network congested | Retry later |
+
+### Privacy Errors (ERR_PRIVACY_3XX)
+
+| Code | HTTP | Message | Recovery Action |
+|------|------|---------|-----------------|
+| `ERR_PRIVACY_301` | 400 | Invalid ZK proof | Regenerate proof |
+| `ERR_PRIVACY_302` | 400 | Insufficient shielded balance | Shield more funds |
+| `ERR_PRIVACY_303` | 400 | Nullifier already used | Transaction already processed |
+| `ERR_PRIVACY_304` | 400 | Proof generation timeout | Retry with smaller amount |
+| `ERR_PRIVACY_305` | 400 | Compliance proof required | Generate proof of innocence |
+
+### Commerce Errors (ERR_COMMERCE_4XX)
+
+| Code | HTTP | Message | Recovery Action |
+|------|------|---------|-----------------|
+| `ERR_COMMERCE_401` | 400 | Payment request expired | Request new QR code |
+| `ERR_COMMERCE_402` | 400 | Merchant not verified | Contact merchant |
+| `ERR_COMMERCE_403` | 400 | Token not accepted | Use different token |
+| `ERR_COMMERCE_404` | 400 | Payment already completed | No action needed |
+| `ERR_COMMERCE_405` | 400 | Settlement pending | Wait for settlement |
+
+### TrustCert Errors (ERR_CERT_5XX)
+
+| Code | HTTP | Message | Recovery Action |
+|------|------|---------|-----------------|
+| `ERR_CERT_501` | 400 | Certificate expired | Renew certificate |
+| `ERR_CERT_502` | 400 | Certificate revoked | Apply for new certificate |
+| `ERR_CERT_503` | 400 | Verification failed | Re-submit documents |
+| `ERR_CERT_504` | 400 | Application incomplete | Complete all steps |
+| `ERR_CERT_505` | 400 | Issuer not trusted | Use verified issuer |
+
+### System Errors (ERR_SYSTEM_9XX)
+
+| Code | HTTP | Message | Recovery Action |
+|------|------|---------|-----------------|
+| `ERR_SYSTEM_901` | 429 | Rate limit exceeded | Wait and retry |
+| `ERR_SYSTEM_902` | 503 | Service maintenance | Retry later |
+| `ERR_SYSTEM_903` | 500 | Internal error | Report to support |
+| `ERR_SYSTEM_904` | 502 | Upstream service error | Retry later |
+
+---
+
+## Appendix B: API Versioning Strategy
+
+### Version Format
+
+APIs use URL-based versioning with semantic versioning principles:
+
+```
+https://api.finaegis.com/v{major}/endpoint
+```
+
+### Current Versions
+
+| Version | Status | Deprecation Date |
+|---------|--------|------------------|
+| `v1` | Active | - |
+| `v2` | Planned (Breaking changes) | - |
+
+### Versioning Rules
+
+1. **Major version** (`v1`, `v2`): Breaking changes that require client updates
+2. **Minor versions**: Backward-compatible additions (no URL change)
+3. **Patch versions**: Bug fixes (no URL change)
+
+### Breaking Changes (Require New Major Version)
+
+- Removing an endpoint
+- Removing a required field from response
+- Changing field types
+- Changing authentication method
+- Changing error code format
+
+### Non-Breaking Changes (No Version Bump)
+
+- Adding new endpoints
+- Adding optional request parameters
+- Adding new fields to responses
+- Adding new error codes
+- Performance improvements
+
+### Version Header
+
+Clients should include API version in headers for tracking:
+
+```http
+X-API-Version: 2024-02-01
+Accept: application/json
+```
+
+### Deprecation Policy
+
+1. **Announcement**: 6 months before deprecation
+2. **Warning Headers**: `Deprecation` and `Sunset` headers added
+3. **Documentation**: Migration guide published
+4. **Grace Period**: 3 months after sunset date
+5. **Removal**: Endpoint returns 410 Gone
+
+Example deprecation headers:
+```http
+Deprecation: true
+Sunset: Sat, 01 Aug 2026 00:00:00 GMT
+Link: <https://docs.finaegis.com/migration/v1-to-v2>; rel="deprecation"
+```
+
+### Mobile SDK Versioning
+
+| SDK Version | Min API | Max API | Notes |
+|-------------|---------|---------|-------|
+| 1.0.x | v1 | v1 | Initial release |
+| 1.1.x | v1 | v1 | Feature additions |
+| 2.0.x | v1 | v2 | Supports both versions |
+
+---
+
+## Appendix C: Glossary
 
 | Term | Definition |
 |------|------------|
@@ -1312,9 +1526,12 @@ Schema::create('certificate_applications', function (Blueprint $table) {
 | **Shield Pool** | Privacy pool where funds are mixed using ZK proofs |
 | **TEE** | Trusted Execution Environment (secure hardware enclave) |
 | **HSM** | Hardware Security Module for key storage |
+| **W3C VC** | W3C Verifiable Credentials standard for digital attestations |
+| **StatusList2021** | W3C standard for credential revocation lists |
+| **RFC 5280** | Internet X.509 PKI Certificate and CRL Profile |
 
 ---
 
-*Document Version: 1.0*
-*Last Updated: February 2026*
+*Document Version: 1.1*
+*Last Updated: February 1, 2026*
 *Author: FinAegis Architecture Team*

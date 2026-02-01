@@ -94,16 +94,21 @@ Welcome to the FinAegis documentation. This guide will help you understand, use,
 
 ## Platform Status
 
-- **Version**: 2.1.0 (Security & Enterprise Features)
+- **Version**: 2.4.0 (Privacy & Identity)
 - **Status**: Demonstration Prototype
-- **Last Updated**: January 30, 2026
+- **Last Updated**: February 1, 2026
 
-### v2.1.0 Features
-- Hardware Wallet Integration (Ledger/Trezor)
-- Multi-Signature Wallet Support
-- Real-time WebSocket Streaming
-- Kubernetes Native Deployment
-- Security Hardening (ECDSA, PBKDF2, EIP-2)
+### Current Release Features (v2.4.0)
+- **Key Management**: Shamir's Secret Sharing, HSM integration
+- **Privacy Layer**: Zero-Knowledge KYC, Proof of Innocence
+- **Commerce**: Soulbound Tokens, Merchant Onboarding, Payment Attestations
+- **TrustCert**: W3C Verifiable Credentials, Certificate Authority, Trust Framework
+
+### Previous Releases
+- v2.3.0: AI-Powered Banking, RegTech Automation, Embedded Finance (BaaS)
+- v2.2.0: Mobile Backend (Device Management, Biometrics, Push Notifications)
+- v2.1.0: Hardware Wallets, Multi-Sig, WebSocket Streaming, Kubernetes
+- v2.0.0: Multi-Tenancy with Team-Based Isolation
 
 This is an educational prototype demonstrating modern banking architecture patterns. It's not production-ready.
 

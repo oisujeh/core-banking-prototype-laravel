@@ -22,7 +22,23 @@ These documents provide technical guidance on:
 - Cryptocurrency exchange integration
 - Payment processing architecture
 
-## Current Architecture Status (January 2026)
+## Current Architecture Status (February 2026)
+
+### v2.4.0 Architecture Additions (In Progress)
+- 🚧 **KeyManagement Domain**: Shamir's Secret Sharing, HSM integration
+- 🚧 **Privacy Domain**: ZK circuits, Proof of Innocence service
+- 🚧 **Commerce Domain**: Soulbound Token architecture, Merchant state machine
+- 🚧 **TrustCert Domain**: W3C VC standard, CA hierarchy, Trust Framework
+
+### v2.3.0 Architecture Additions
+- ✅ **AI Domain**: LLM orchestration, MCP tools, event-sourced AI interactions
+- ✅ **RegTech Domain**: Regulatory filing adapters, compliance automation
+- ✅ **BaaS Architecture**: Partner tier system, white-label middleware
+
+### v2.2.0 Architecture Additions
+- ✅ **Mobile Domain**: Device registration, biometric verification
+- ✅ **Push Notification System**: Provider abstraction (FCM/APNs)
+- ✅ **WebSocket Broadcasting**: Soketi integration for mobile
 
 ### v2.1.0 Architecture Additions
 - ✅ **Hardware Wallet Integration**: WebUSB/Electron for Ledger/Trezor

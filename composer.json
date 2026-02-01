@@ -93,7 +93,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/faker.php"
+            "app/Helpers/faker.php",
+            "app/Helpers/branding.php"
         ]
     },
     "autoload-dev": {

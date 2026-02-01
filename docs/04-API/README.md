@@ -22,7 +22,28 @@ These documents provide:
 - Webhook integration guidance
 - API best practices
 
-## Current API Status (January 2026)
+## Current API Status (February 2026)
+
+### v2.4.0 API Endpoints (February 1, 2026)
+- 🚧 **Privacy APIs**: Zero-Knowledge KYC verification
+  - `POST /api/privacy/zkkyc/verify` - Verify without exposing PII
+  - `POST /api/privacy/selective-disclosure` - Prove specific claims
+  - `POST /api/privacy/proof-of-innocence` - Generate compliance proofs
+
+- 🚧 **Commerce APIs**: Soulbound tokens, attestations
+  - `POST /api/commerce/soulbound-tokens` - Issue SBT
+  - `POST /api/commerce/merchants/onboard` - Merchant onboarding
+  - `POST /api/commerce/attestations` - Payment attestations
+
+- 🚧 **TrustCert APIs**: Verifiable credentials
+  - `POST /api/trustcert/credentials` - Issue credential
+  - `POST /api/trustcert/verify` - Verify credential
+  - `GET /api/trustcert/revocations` - Check revocation status
+
+### v2.2.0 API Endpoints (January 31, 2026)
+- ✅ **Mobile Device APIs**: Device registration and management
+- ✅ **Biometric APIs**: Biometric authentication
+- ✅ **Push Notification APIs**: FCM/APNs integration
 
 ### v2.1.0 API Endpoints (January 30, 2026)
 - ✅ **Hardware Wallet APIs**: Device registration, signing requests

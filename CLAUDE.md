@@ -20,7 +20,9 @@ git status && git branch --show-current
 ### Version Status
 | Version | Status | Key Changes |
 |---------|--------|-------------|
-| v2.2.0 | 🚧 In Progress | Mobile backend: device mgmt, biometrics, push notifications |
+| v2.4.0 | 🚧 In Progress | Privacy & Identity: Key Management, Privacy Layer, Commerce, TrustCert |
+| v2.3.0 | ✅ Released | AI Banking, RegTech Automation, Embedded Finance (BaaS) |
+| v2.2.0 | ✅ Released | Mobile backend: device mgmt, biometrics, push notifications |
 | v2.1.0 | ✅ Released | Security hardening, Hardware wallets, WebSocket, Kubernetes |
 | v2.0.0 | ✅ Released | Multi-Tenancy (stancl/tenancy v3.9) |
 
@@ -78,7 +80,7 @@ php artisan tenants:export-data <id> --format=json       # Export data
 
 ```
 app/
-├── Domain/           # DDD bounded contexts (30 domains)
+├── Domain/           # DDD bounded contexts (30+ domains)
 │   ├── Account/      # Account management
 │   ├── Exchange/     # Trading engine
 │   ├── Lending/      # P2P lending
@@ -86,6 +88,10 @@ app/
 │   ├── Treasury/     # Portfolio management
 │   ├── Wallet/       # Blockchain wallets
 │   ├── Compliance/   # KYC/AML
+│   ├── KeyManagement/# Shamir's Secret Sharing, HSM (v2.4.0)
+│   ├── Privacy/      # ZK-KYC, Proof of Innocence (v2.4.0)
+│   ├── Commerce/     # SBT, Merchants, Attestations (v2.4.0)
+│   ├── TrustCert/    # W3C VCs, Certificate Authority (v2.4.0)
 │   └── Shared/       # CQRS interfaces, events
 ├── Infrastructure/   # CQRS bus implementations
 ├── Http/Controllers/ # REST API
@@ -112,6 +118,14 @@ app/
 | Biometric Auth | `BiometricAuthenticationService` (Mobile) |
 | Push Notifications | `PushNotificationService` (Mobile) |
 | Mobile Sessions | `MobileSessionService` (Mobile) |
+| Key Sharding | `ShamirService` (KeyManagement) |
+| ZK-KYC | `ZkKycService` (Privacy) |
+| Proof of Innocence | `ProofOfInnocenceService` (Privacy) |
+| Soulbound Tokens | `SoulboundTokenService` (Commerce) |
+| Merchant Onboarding | `MerchantOnboardingService` (Commerce) |
+| Verifiable Credentials | `VerifiableCredentialService` (TrustCert) |
+| Certificate Authority | `CertificateAuthorityService` (TrustCert) |
+| Trust Framework | `TrustFrameworkService` (TrustCert) |
 
 ---
 
