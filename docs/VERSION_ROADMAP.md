@@ -1095,12 +1095,67 @@ main ─────────●─────────●─────
 | **v1.4.1** | Patch Release | Database Cache Connection Fix | ✅ Released 2026-01-27 |
 | **v2.0.0** | Multi-Tenancy | Team-Based Isolation, 9 Phases | ✅ Released 2026-01-28 |
 | **v2.1.0** | Security & Enterprise | Hardware Wallets, K8s, Security Hardening | ✅ Released 2026-01-30 |
-| **v2.2.0** | Mobile Wallet App | Expo/EAS Android/iOS, Push Notifications, Biometric Auth | 🎯 Q1-Q2 2026 |
-| **v2.3.0** | Industry Leadership | AI Banking, RegTech, Embedded Finance, DeFi | 🎯 Q3-Q4 2026 |
+| **v2.2.0** | Mobile Backend | Device Mgmt, Biometrics, Push Notifications, WebSocket | ✅ Released 2026-01-31 |
+| **v2.3.0** | Industry Leadership | AI Banking, RegTech, Embedded Finance (BaaS) | ✅ Released 2026-02-01 |
+| **v2.4.0** | Privacy & Identity | Key Management, Privacy, Commerce, TrustCert | 🚧 In Progress |
 
 ---
 
-*Document Version: 2.2*
+## Version 2.4.0 - Privacy & Identity (In Progress)
+
+**Target**: Q1 2026
+**Theme**: Privacy-Preserving Identity & Secure Key Management
+
+### Phase 1: Key Management Foundation ✅ COMPLETED
+
+**PR #364 - Shamir's Secret Sharing**
+
+| Component | Files | Status |
+|-----------|-------|--------|
+| Enums | `ShardType`, `ShardStatus` | ✅ |
+| Value Objects | `KeyShard`, `ReconstructedKey` | ✅ |
+| Services | `ShamirService`, `EncryptionService`, `KeyReconstructionService`, `ShardDistributionService` | ✅ |
+| HSM | `DemoHsmProvider`, `HsmIntegrationService` | ✅ |
+| Events | `KeyReconstructed`, `KeyShardsCreated`, `KeyShardsRotated`, `KeyReconstructionFailed` | ✅ |
+| Models | `KeyShardRecord`, `KeyReconstructionLog`, `RecoveryBackup` | ✅ |
+| Tests | 57 unit tests, 117 assertions | ✅ |
+
+### Phase 2: Privacy Domain (Planned)
+
+**Scope**: Zero-Knowledge KYC, Privacy-Preserving Payments
+
+| Component | Description |
+|-----------|-------------|
+| `ZkKycService` | Zero-knowledge KYC verification without exposing PII |
+| `SelectiveDisclosureService` | Prove claims without revealing full data |
+| `PrivacyPoolIntegration` | RAILGUN-style privacy payments |
+| `ProofOfInnocenceService` | Compliance-friendly privacy proofs |
+
+### Phase 3: Commerce Domain (Planned)
+
+**Scope**: On-Chain Credentials, Merchant Integration
+
+| Component | Description |
+|-----------|-------------|
+| `SoulboundTokenService` | ERC-5114 attestation tokens |
+| `MerchantOnboardingService` | KYC-verified merchant registration |
+| `PaymentAttestationService` | On-chain payment proofs |
+| `CredentialIssuanceService` | Verifiable credentials issuance |
+
+### Phase 4: TrustCert Domain (Planned)
+
+**Scope**: Verifiable Credentials, Certificate Management
+
+| Component | Description |
+|-----------|-------------|
+| `CertificateAuthorityService` | Internal CA for credential signing |
+| `VerifiableCredentialService` | W3C VC standard implementation |
+| `RevocationRegistryService` | Credential revocation tracking |
+| `TrustFrameworkService` | Multi-issuer trust management |
+
+---
+
+*Document Version: 2.4*
 *Created: January 11, 2026*
-*Updated: January 30, 2026 (v2.2.0 Mobile App Planned)*
-*Next Review: After v2.2.0 MVP Release*
+*Updated: February 1, 2026 (v2.4.0 Privacy & Identity)*
+*Next Review: After v2.4.0 Phase 2 Release*
