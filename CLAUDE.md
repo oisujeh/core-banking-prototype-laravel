@@ -20,8 +20,9 @@ git status && git branch --show-current
 ### Version Status
 | Version | Status | Key Changes |
 |---------|--------|-------------|
-| v2.4.0 | 🚧 In Progress | Privacy & Identity: Key Management, Privacy Layer, Commerce, TrustCert |
-| v2.3.0 | ✅ Released | AI Banking, RegTech Automation, Embedded Finance (BaaS) |
+| v2.5.0 | 🚧 Planned | AI Query Endpoints, RegTech Adapters, SDK Generation, BaaS Implementation |
+| v2.4.0 | ✅ Released | Privacy & Identity: Key Management, Privacy Layer, Commerce, TrustCert |
+| v2.3.0 | ✅ Released | AI Framework, RegTech Foundation, BaaS Configuration |
 | v2.2.0 | ✅ Released | Mobile backend: device mgmt, biometrics, push notifications |
 | v2.1.0 | ✅ Released | Security hardening, Hardware wallets, WebSocket, Kubernetes |
 | v2.0.0 | ✅ Released | Multi-Tenancy (stancl/tenancy v3.9) |
