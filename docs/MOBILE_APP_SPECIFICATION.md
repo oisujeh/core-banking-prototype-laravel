@@ -1,9 +1,9 @@
 # FinAegis Mobile Wallet - Technical Specification
 
-**Version**: 1.3
-**Date**: February 1, 2026
+**Version**: 1.4
+**Date**: February 2, 2026
 **Status**: Backend Complete - Ready for Mobile Development
-**Target Release**: v2.5.0 (Mobile App Launch)
+**Target Release**: v2.5.1 (Mobile App Launch)
 
 ---
 
@@ -568,7 +568,142 @@ async function signTransaction(tx: Transaction): Promise<SignedTransaction> {
 }
 ```
 
+### 3.2.1 Passkey/WebAuthn Integration (Passwordless Authentication)
+
+> **Requirement**: Modern "Privy/Turnkey-like" experience without seed phrases.
+> **Implementation**: FIDO2/WebAuthn with Secure Enclave cryptographic signing.
+
+#### Architecture Decision: Passkey-First Authentication
+
+**Why Passkeys over Traditional Auth:**
+- No passwords to phish or leak
+- No seed phrases for users to manage
+- Biometric protection via hardware (Secure Enclave / StrongBox)
+- Phishing-resistant (origin-bound credentials)
+- Cross-device sync via iCloud Keychain / Google Password Manager
+
+#### Implementation Flow
+
+```typescript
+// 1. Registration (Passkey Creation)
+interface PasskeyRegistration {
+  challenge: string;              // Server-generated challenge
+  rpId: 'finaegis.com';           // Relying Party ID (domain-bound)
+  rpName: 'FinAegis Wallet';
+  user: {
+    id: string;                   // User UUID
+    name: string;                 // Email/username
+    displayName: string;
+  };
+  pubKeyCredParams: [
+    { type: 'public-key', alg: -7 },   // ES256 (P-256)
+    { type: 'public-key', alg: -257 }  // RS256 fallback
+  ];
+  authenticatorSelection: {
+    authenticatorAttachment: 'platform';  // Prefer built-in (Face ID, etc.)
+    userVerification: 'required';
+    residentKey: 'required';
+  };
+}
+
+// 2. Authentication (Signing)
+async function authenticateWithPasskey(): Promise<AuthResult> {
+  // Browser/Native WebAuthn API
+  const credential = await navigator.credentials.get({
+    publicKey: {
+      challenge: serverChallenge,
+      rpId: 'finaegis.com',
+      userVerification: 'required',
+      timeout: 60000,
+    }
+  });
+
+  // Send to backend for verification
+  return api.verifyPasskey({
+    credentialId: credential.id,
+    clientDataJSON: credential.response.clientDataJSON,
+    authenticatorData: credential.response.authenticatorData,
+    signature: credential.response.signature,
+  });
+}
+
+// 3. Transaction Signing with Passkey
+async function signWithPasskey(tx: Transaction): Promise<SignedTransaction> {
+  // Passkey signature serves as 2FA for shard retrieval
+  const passkeyAuth = await authenticateWithPasskey();
+
+  // Now retrieve auth shard (backend verifies passkey signature)
+  const authShard = await api.getAuthShard({
+    passkeyAuthToken: passkeyAuth.token,
+    transactionHash: tx.hash,
+  });
+
+  // Combine with device shard (biometric-protected)
+  const privateKey = shamirs.combine([deviceShard, authShard]);
+  return sign(tx, privateKey);
+}
+```
+
+#### Mobile Implementation
+
+| Platform | Library | Secure Hardware |
+|----------|---------|-----------------|
+| **iOS** | `ASAuthorizationController` | Secure Enclave (P-256) |
+| **Android** | `Fido2ApiClient` | StrongBox / TEE |
+| **React Native** | `react-native-passkey` | Platform-specific |
+
+#### Backend Integration
+
+```php
+// Backend Passkey Verification (WebAuthn)
+class PasskeyController extends Controller
+{
+    public function verify(PasskeyVerifyRequest $request): JsonResponse
+    {
+        $credential = $this->webAuthnService->verify(
+            credentialId: $request->credential_id,
+            clientDataJSON: $request->client_data_json,
+            authenticatorData: $request->authenticator_data,
+            signature: $request->signature,
+            challenge: session('webauthn_challenge'),
+        );
+
+        if (!$credential->isValid()) {
+            return response()->json(['error' => 'Invalid passkey'], 401);
+        }
+
+        // Issue short-lived token for shard retrieval
+        return response()->json([
+            'token' => $this->tokenService->issueShardRetrievalToken(
+                userId: $credential->userId,
+                ttl: 60, // 60 seconds
+            ),
+        ]);
+    }
+}
+```
+
 ### 3.3 Privacy Layer Integration
+
+#### Privacy Protocol Decision: RAILGUN-Inspired Approach
+
+> **Product Decision**: FinAegis implements a **RAILGUN-inspired** privacy protocol, NOT Tornado Cash.
+
+**Why RAILGUN over Tornado Cash:**
+
+| Factor | Tornado Cash | RAILGUN (FinAegis Choice) |
+|--------|--------------|---------------------------|
+| **Regulatory Status** | OFAC sanctioned | Compliant (Proof of Innocence) |
+| **Fund Tracing** | No audit capability | Encrypted audit vault |
+| **User Protection** | Anonymity only | Anonymity + Compliance |
+| **On-chain Footprint** | Mixer contract | UTXO-based shielded pool |
+| **Proof System** | Tornado's snark | Groth16 / PLONK |
+
+**Key Differentiators:**
+1. **Proof of Innocence**: Users can prove funds are NOT from sanctioned sources without revealing transaction history
+2. **Encrypted Audit Vault**: Transaction details encrypted with multi-sig (3-of-5) for lawful disclosure
+3. **Selective Disclosure**: Users choose what to reveal for compliance (KYC level, transaction count, etc.)
+4. **Compliant by Design**: Works with regulators, not against them
 
 ```typescript
 // Privacy Transaction Flow
@@ -2194,7 +2329,15 @@ Link: <https://docs.finaegis.com/migration/v1-to-v2>; rel="deprecation"
 
 ---
 
-*Document Version: 1.3*
-*Last Updated: February 1, 2026*
+*Document Version: 1.4*
+*Last Updated: February 2, 2026*
 *Author: FinAegis Architecture Team*
-*Backend Status: v2.5.0 APIs Complete (Card Issuance, Gas Relayer, TrustCert Presentation)*
+*Backend Status: v2.5.1 APIs Complete (Card Issuance, Gas Relayer, TrustCert Presentation, Passkey Support)*
+
+### Changelog
+
+| Version | Date | Changes |
+|---------|------|---------|
+| 1.4 | 2026-02-02 | Added Passkey/WebAuthn spec (3.2.1), Privacy Protocol decision (RAILGUN-inspired) |
+| 1.3 | 2026-02-01 | Added Card Issuance (3.4), Gas Relayer API (5.1.0b), TrustCert Presentation API (5.1.0c) |
+| 1.2 | 2026-01-31 | Initial privacy layer and TrustCert documentation |

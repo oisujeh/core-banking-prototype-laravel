@@ -187,3 +187,14 @@ Schedule::job(new App\Domain\Mobile\Jobs\CleanupStaleDevices())
     ->description('Cleanup stale mobile devices')
     ->appendOutputTo(storage_path('logs/mobile-cleanup.log'))
     ->withoutOverlapping();
+
+// TrustCert Certificate Management
+// Check for expired certificates and send renewal reminders daily at 6 AM
+Schedule::command('trustcert:check-expired')
+    ->dailyAt('06:00')
+    ->description('Check for expired TrustCert certificates and send renewal reminders')
+    ->appendOutputTo(storage_path('logs/trustcert-expiry.log'))
+    ->withoutOverlapping()
+    ->onFailure(function () {
+        Log::warning('TrustCert expiry check failed to run');
+    });
