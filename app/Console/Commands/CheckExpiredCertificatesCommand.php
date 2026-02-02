@@ -7,11 +7,11 @@ namespace App\Console\Commands;
 use App\Domain\TrustCert\Enums\CertificateStatus;
 use App\Domain\TrustCert\Events\CertificateExpired;
 use DateTimeImmutable;
-use stdClass;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
+use stdClass;
 
 /**
  * Scheduled command to check and revoke expired TrustCert certificates.
