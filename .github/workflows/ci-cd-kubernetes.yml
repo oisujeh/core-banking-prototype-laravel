@@ -18,6 +18,36 @@ env:
 
 jobs:
   # ============================================================================
+  # Check if deployment secrets are configured
+  # ============================================================================
+  check-secrets:
+    name: Check Deployment Secrets
+    runs-on: ubuntu-latest
+    outputs:
+      has-staging-secret: ${{ steps.check-staging.outputs.has-secret }}
+      has-production-secret: ${{ steps.check-production.outputs.has-secret }}
+    steps:
+      - name: Check staging secret
+        id: check-staging
+        run: |
+          if [ -n "${{ secrets.KUBE_CONFIG_STAGING }}" ]; then
+            echo "has-secret=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-secret=false" >> $GITHUB_OUTPUT
+            echo "::notice::KUBE_CONFIG_STAGING secret not configured - staging deployment will be skipped"
+          fi
+
+      - name: Check production secret
+        id: check-production
+        run: |
+          if [ -n "${{ secrets.KUBE_CONFIG_PRODUCTION }}" ]; then
+            echo "has-secret=true" >> $GITHUB_OUTPUT
+          else
+            echo "has-secret=false" >> $GITHUB_OUTPUT
+            echo "::notice::KUBE_CONFIG_PRODUCTION secret not configured - production deployment will be skipped"
+          fi
+
+  # ============================================================================
   # Build and Test
   # ============================================================================
   build:
@@ -159,13 +189,16 @@ jobs:
           sarif_file: 'trivy-results.sarif'
 
   # ============================================================================
-  # Deploy to Staging
+  # Deploy to Staging (Optional - requires KUBE_CONFIG_STAGING secret)
   # ============================================================================
   deploy-staging:
     name: Deploy to Staging
     runs-on: ubuntu-latest
-    needs: [build, helm-lint]
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    needs: [build, helm-lint, check-secrets]
+    if: |
+      github.ref == 'refs/heads/main' &&
+      github.event_name == 'push' &&
+      needs.check-secrets.outputs.has-staging-secret == 'true'
     environment:
       name: staging
       url: https://api.staging.finaegis.org
@@ -218,13 +251,15 @@ jobs:
           kubectl rollout status -n finaegis-staging deployment/finaegis-horizon
 
   # ============================================================================
-  # Deploy to Production
+  # Deploy to Production (Optional - requires KUBE_CONFIG_PRODUCTION secret)
   # ============================================================================
   deploy-production:
     name: Deploy to Production
     runs-on: ubuntu-latest
-    needs: [build, helm-lint, security-scan]
-    if: startsWith(github.ref, 'refs/tags/v')
+    needs: [build, helm-lint, security-scan, check-secrets]
+    if: |
+      startsWith(github.ref, 'refs/tags/v') &&
+      needs.check-secrets.outputs.has-production-secret == 'true'
     environment:
       name: production
       url: https://api.finaegis.org
