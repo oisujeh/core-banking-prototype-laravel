@@ -29,6 +29,7 @@ use App\Http\Controllers\Api\MCPToolsController;
 use App\Http\Controllers\Api\MobilePayment\ActivityController;
 use App\Http\Controllers\Api\MobilePayment\NetworkStatusController;
 use App\Http\Controllers\Api\MobilePayment\PaymentIntentController;
+use App\Http\Controllers\Api\MobilePayment\ReceiptController;
 use App\Http\Controllers\Api\MobilePayment\TransactionController as MobileTransactionController;
 use App\Http\Controllers\Api\MobilePayment\WalletReceiveController;
 use App\Http\Controllers\Api\PollController;
@@ -1284,6 +1285,11 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'check.token.expiration'])->gro
     Route::get('/transactions/{txId}', [MobileTransactionController::class, 'show'])
         ->middleware('api.rate_limit:query')
         ->name('mobile.transactions.show');
+
+    // Receipt Generation
+    Route::post('/transactions/{txId}/receipt', [ReceiptController::class, 'store'])
+        ->middleware('api.rate_limit:mutation')
+        ->name('mobile.transactions.receipt');
 
     // Wallet Receive Address
     Route::get('/wallet/receive', WalletReceiveController::class)
