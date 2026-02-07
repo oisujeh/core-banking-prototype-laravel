@@ -33,7 +33,6 @@ class PaymentIntentException extends RuntimeException
             'error'   => [
                 'code'    => $this->errorCode->value,
                 'message' => $this->getMessage(),
-                'details' => $this->details,
             ],
         ];
     }

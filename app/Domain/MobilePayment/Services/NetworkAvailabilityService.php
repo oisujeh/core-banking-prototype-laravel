@@ -23,7 +23,7 @@ class NetworkAvailabilityService
     /**
      * Get the status of all supported networks.
      *
-     * @return array<int, array{network: string, name: string, status: string, avg_fee_usd: string, avg_confirmation_seconds: int, congestion: string, native_asset: string, supported_assets: array<string>}>
+     * @return array<int, array{id: string, name: string, nativeAsset: string, status: string, avgFeeUsd: string, avgConfirmationSeconds: int, congestion: string, supportedAssets: array<string>}>
      */
     public function getNetworkStatuses(): array
     {
@@ -37,14 +37,14 @@ class NetworkAvailabilityService
     /**
      * Get status for a single network.
      *
-     * @return array{network: string, name: string, status: string, avg_fee_usd: string, avg_confirmation_seconds: int, congestion: string, native_asset: string, supported_assets: array<string>}|null
+     * @return array{id: string, name: string, nativeAsset: string, status: string, avgFeeUsd: string, avgConfirmationSeconds: int, congestion: string, supportedAssets: array<string>}|null
      */
     public function getNetworkStatus(PaymentNetwork $network): ?array
     {
         $statuses = $this->getNetworkStatuses();
 
         foreach ($statuses as $status) {
-            if ($status['network'] === $network->value) {
+            if ($status['id'] === $network->value) {
                 return $status;
             }
         }
@@ -53,7 +53,7 @@ class NetworkAvailabilityService
     }
 
     /**
-     * @return array<int, array{network: string, name: string, status: string, avg_fee_usd: string, avg_confirmation_seconds: int, congestion: string, native_asset: string, supported_assets: array<string>}>
+     * @return array<int, array{id: string, name: string, nativeAsset: string, status: string, avgFeeUsd: string, avgConfirmationSeconds: int, congestion: string, supportedAssets: array<string>}>
      */
     private function fetchNetworkStatuses(): array
     {
@@ -67,21 +67,21 @@ class NetworkAvailabilityService
     }
 
     /**
-     * @return array{network: string, name: string, status: string, avg_fee_usd: string, avg_confirmation_seconds: int, congestion: string, native_asset: string, supported_assets: array<string>}
+     * @return array{id: string, name: string, nativeAsset: string, status: string, avgFeeUsd: string, avgConfirmationSeconds: int, congestion: string, supportedAssets: array<string>}
      */
     private function checkNetwork(PaymentNetwork $network): array
     {
         $healthy = $this->isNetworkHealthy($network);
 
         return [
-            'network'                  => $network->value,
-            'name'                     => $network->label(),
-            'status'                   => $healthy ? 'operational' : 'degraded',
-            'avg_fee_usd'              => $this->getAverageFeeUsd($network),
-            'avg_confirmation_seconds' => $this->getAvgConfirmationSeconds($network),
-            'congestion'               => $this->getCongestionLevel($network),
-            'native_asset'             => $network->nativeAsset(),
-            'supported_assets'         => ['USDC'],
+            'id'                     => $network->value,
+            'name'                   => $network->label(),
+            'nativeAsset'            => $network->nativeAsset(),
+            'status'                 => $healthy ? 'active' : 'unavailable',
+            'avgFeeUsd'              => $this->getAverageFeeUsd($network),
+            'avgConfirmationSeconds' => $this->getAvgConfirmationSeconds($network),
+            'congestion'             => $this->getCongestionLevel($network),
+            'supportedAssets'        => ['USDC'],
         ];
     }
 

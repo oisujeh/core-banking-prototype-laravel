@@ -102,6 +102,16 @@ class ActivityFeedService
             return null;
         }
 
+        // Validate date format
+        if (! is_string($decoded['t']) || ! strtotime($decoded['t'])) {
+            return null;
+        }
+
+        // Validate id is a valid UUID string
+        if (! is_string($decoded['id']) || strlen($decoded['id']) > 36) {
+            return null;
+        }
+
         return [
             'occurred_at' => $decoded['t'],
             'id'          => $decoded['id'],

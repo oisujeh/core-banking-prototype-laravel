@@ -129,6 +129,9 @@ class PaymentIntentController extends Controller
     public function cancel(Request $request, string $intentId): JsonResponse
     {
         try {
+            $request->validate([
+                'reason' => ['sometimes', 'nullable', 'string', 'max:500'],
+            ]);
             $reason = $request->input('reason');
 
             /** @var \App\Models\User $user */

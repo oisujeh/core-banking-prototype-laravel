@@ -18,7 +18,7 @@ class ReceiveAddressService
     /**
      * Get a receive address for the given user, network, and asset.
      *
-     * @return array{address: string, network: string, asset: string, qr_value: string, memo: string|null, minimum_amount: string, metadata: array<string, mixed>}
+     * @return array{address: string, qrPayload: string, network: string, asset: string, warning: string, minimumAmount: string}
      */
     public function getReceiveAddress(int $userId, PaymentNetwork $network, PaymentAsset $asset): array
     {
@@ -31,17 +31,12 @@ class ReceiveAddressService
         $address = $addressData->address;
 
         return [
-            'address'        => $address,
-            'network'        => $network->value,
-            'asset'          => $asset->value,
-            'qr_value'       => $this->buildQrValue($address, $network, $asset),
-            'memo'           => null, // Solana/Tron don't use memos for USDC
-            'minimum_amount' => '0.01',
-            'metadata'       => [
-                'network_name' => $network->label(),
-                'asset_name'   => $asset->label(),
-                'explorer_url' => $network->explorerUrl('address') . '/' . $address,
-            ],
+            'address'       => $address,
+            'qrPayload'     => $this->buildQrValue($address, $network, $asset),
+            'network'       => $network->value,
+            'asset'         => $asset->value,
+            'warning'       => "Only send {$asset->value} on {$network->label()} to this address. Using other tokens or networks may result in loss.",
+            'minimumAmount' => '0.01',
         ];
     }
 

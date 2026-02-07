@@ -59,24 +59,24 @@ describe('ReceiptService', function (): void {
 
         $fee = $method->invoke($service, $intent);
 
-        expect($fee)->toBe('~$0.001');
+        expect($fee)->toBe('0.01 USD');
     });
 
-    it('formats network fee from estimate', function (): void {
+    it('formats network fee from usdApprox estimate', function (): void {
         $service = new ReceiptService();
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('formatNetworkFee');
         $method->setAccessible(true);
 
         $intent = new App\Domain\MobilePayment\Models\PaymentIntent();
-        $intent->fees_estimate = ['network_fee' => '0.005'];
+        $intent->fees_estimate = ['usdApprox' => '0.50'];
 
         $fee = $method->invoke($service, $intent);
 
-        expect($fee)->toBe('~$0.005');
+        expect($fee)->toBe('0.50 USD');
     });
 
-    it('formats network fee without network_fee key as default', function (): void {
+    it('formats network fee without usdApprox key as default', function (): void {
         $service = new ReceiptService();
         $reflection = new ReflectionClass($service);
         $method = $reflection->getMethod('formatNetworkFee');
@@ -87,6 +87,6 @@ describe('ReceiptService', function (): void {
 
         $fee = $method->invoke($service, $intent);
 
-        expect($fee)->toBe('~$0.001');
+        expect($fee)->toBe('0.01 USD');
     });
 });

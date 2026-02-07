@@ -57,6 +57,14 @@ class ActivityFeedItem extends Model
         'metadata',
     ];
 
+    /** @var list<string> */
+    protected $hidden = [
+        'user_id',
+        'reference_type',
+        'reference_id',
+        'metadata',
+    ];
+
     protected $casts = [
         'activity_type' => ActivityItemType::class,
         'protected'     => 'boolean',

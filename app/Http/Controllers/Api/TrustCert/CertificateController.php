@@ -60,9 +60,11 @@ class CertificateController extends Controller
             ], 404);
         }
 
+        $safeCertId = preg_replace('/[^a-zA-Z0-9_\-]/', '', $certId);
+
         return response($pdfContent, 200, [
             'Content-Type'        => 'application/pdf',
-            'Content-Disposition' => "attachment; filename=\"certificate-{$certId}.pdf\"",
+            'Content-Disposition' => "attachment; filename=\"certificate-{$safeCertId}.pdf\"",
         ]);
     }
 }
