@@ -49,6 +49,15 @@ class PaymentReceipt extends Model
         'transaction_at',
     ];
 
+    /** @var list<string> */
+    protected $hidden = [
+        'id',
+        'user_id',
+        'payment_intent_id',
+        'share_token',
+        'pdf_path',
+    ];
+
     protected $casts = [
         'transaction_at' => 'datetime',
     ];

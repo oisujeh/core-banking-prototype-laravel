@@ -75,15 +75,15 @@ class DemoMerchantLookupService implements MerchantLookupServiceInterface
      */
     private function buildMerchant(string $publicId, array $data): Merchant
     {
-        $merchant = new Merchant();
-        $merchant->id = (string) \Illuminate\Support\Str::uuid();
-        $merchant->public_id = $publicId;
-        $merchant->display_name = $data['display_name'];
-        $merchant->icon_url = $data['icon_url'];
-        $merchant->accepted_assets = $data['accepted_assets'];
-        $merchant->accepted_networks = $data['accepted_networks'];
-        $merchant->status = MerchantStatus::ACTIVE;
-
-        return $merchant;
+        return Merchant::firstOrCreate(
+            ['public_id' => $publicId],
+            [
+                'display_name'      => $data['display_name'],
+                'icon_url'          => $data['icon_url'] ?? null,
+                'accepted_assets'   => $data['accepted_assets'],
+                'accepted_networks' => $data['accepted_networks'],
+                'status'            => MerchantStatus::ACTIVE,
+            ],
+        );
     }
 }

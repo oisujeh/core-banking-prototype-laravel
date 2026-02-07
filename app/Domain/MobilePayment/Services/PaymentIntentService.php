@@ -11,6 +11,7 @@ use App\Domain\MobilePayment\Enums\PaymentIntentStatus;
 use App\Domain\MobilePayment\Enums\PaymentNetwork;
 use App\Domain\MobilePayment\Exceptions\PaymentIntentException;
 use App\Domain\MobilePayment\Models\PaymentIntent;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 class PaymentIntentService implements PaymentIntentServiceInterface
@@ -31,6 +32,20 @@ class PaymentIntentService implements PaymentIntentServiceInterface
         $network = (string) $data['preferredNetwork'];
         $amount = (string) $data['amount'];
         $shield = (bool) ($data['shield'] ?? false);
+        $idempotencyKey = isset($data['idempotencyKey']) ? (string) $data['idempotencyKey'] : null;
+
+        // Enforce idempotency: return existing intent if key matches
+        if ($idempotencyKey !== null) {
+            $existing = PaymentIntent::where('user_id', $userId)
+                ->where('idempotency_key', $idempotencyKey)
+                ->first();
+
+            if ($existing) {
+                $existing->load('merchant');
+
+                return $existing;
+            }
+        }
 
         // Look up merchant
         $merchant = $this->merchantLookup->findByPublicId($merchantId);
@@ -39,7 +54,6 @@ class PaymentIntentService implements PaymentIntentServiceInterface
         if (! $merchant->canAcceptPayments()) {
             throw new PaymentIntentException(
                 PaymentErrorCode::MERCHANT_UNREACHABLE,
-                details: ['merchantId' => $merchantId],
             );
         }
 
@@ -48,13 +62,11 @@ class PaymentIntentService implements PaymentIntentServiceInterface
             if (! $merchant->acceptsAsset($asset)) {
                 throw new PaymentIntentException(
                     PaymentErrorCode::WRONG_TOKEN,
-                    details: ['merchantId' => $merchantId, 'asset' => $asset],
                 );
             }
 
             throw new PaymentIntentException(
                 PaymentErrorCode::WRONG_NETWORK,
-                details: ['merchantId' => $merchantId, 'network' => $network],
             );
         }
 
@@ -76,7 +88,7 @@ class PaymentIntentService implements PaymentIntentServiceInterface
             'shield_enabled'         => $shield,
             'fees_estimate'          => $fees->toArray(),
             'required_confirmations' => $networkEnum->requiredConfirmations(),
-            'idempotency_key'        => $data['idempotencyKey'] ?? null,
+            'idempotency_key'        => $idempotencyKey,
             'expires_at'             => now()->addMinutes($expiryMinutes),
         ]);
 
@@ -100,33 +112,40 @@ class PaymentIntentService implements PaymentIntentServiceInterface
 
     public function submit(string $intentId, int $userId, string $authType): PaymentIntent
     {
-        $intent = $this->get($intentId, $userId);
+        return DB::transaction(function () use ($intentId, $userId) {
+            $intent = PaymentIntent::with('merchant')
+                ->where('public_id', $intentId)
+                ->where('user_id', $userId)
+                ->lockForUpdate()
+                ->firstOrFail();
 
-        // Check if already submitted
-        if (in_array($intent->status, [PaymentIntentStatus::SUBMITTING, PaymentIntentStatus::PENDING], true)) {
-            throw new PaymentIntentException(
-                PaymentErrorCode::INTENT_ALREADY_SUBMITTED,
-                details: ['intentId' => $intentId, 'currentStatus' => $intent->status->value],
-            );
-        }
+            // Lazy expiry check
+            $intent->expireIfStale();
 
-        // Check if expired
-        if ($intent->status === PaymentIntentStatus::EXPIRED) {
-            throw new PaymentIntentException(
-                PaymentErrorCode::INTENT_EXPIRED,
-                details: ['intentId' => $intentId],
-            );
-        }
+            // Check if already submitted
+            if (in_array($intent->status, [PaymentIntentStatus::SUBMITTING, PaymentIntentStatus::PENDING], true)) {
+                throw new PaymentIntentException(
+                    PaymentErrorCode::INTENT_ALREADY_SUBMITTED,
+                );
+            }
 
-        // Transition to SUBMITTING
-        $intent->transitionTo(PaymentIntentStatus::SUBMITTING);
+            // Check if expired
+            if ($intent->status === PaymentIntentStatus::EXPIRED) {
+                throw new PaymentIntentException(
+                    PaymentErrorCode::INTENT_EXPIRED,
+                );
+            }
 
-        // In demo mode, simulate immediate submission success
-        if (config('mobile_payment.demo_mode', true)) {
-            $this->simulateDemoSubmission($intent);
-        }
+            // Transition to SUBMITTING
+            $intent->transitionTo(PaymentIntentStatus::SUBMITTING);
 
-        return $intent->fresh(['merchant']) ?? $intent;
+            // In demo mode, simulate immediate submission success
+            if (config('mobile_payment.demo_mode', true)) {
+                $this->simulateDemoSubmission($intent);
+            }
+
+            return $intent->fresh(['merchant']) ?? $intent;
+        });
     }
 
     public function cancel(string $intentId, int $userId, ?string $reason = null): PaymentIntent
@@ -140,15 +159,11 @@ class PaymentIntentService implements PaymentIntentServiceInterface
                 default                                                                                          => PaymentErrorCode::INTENT_ALREADY_SUBMITTED,
             };
 
-            throw new PaymentIntentException(
-                $errorCode,
-                details: ['intentId' => $intentId, 'currentStatus' => $intent->status->value],
-            );
+            throw new PaymentIntentException($errorCode);
         }
 
+        // Set cancel_reason before transitionTo; transitionTo calls save() atomically
         $intent->cancel_reason = $reason ?? 'user_cancelled';
-        $intent->save();
-
         $intent->transitionTo(PaymentIntentStatus::CANCELLED);
 
         return $intent->fresh(['merchant']) ?? $intent;
@@ -162,12 +177,12 @@ class PaymentIntentService implements PaymentIntentServiceInterface
         $network = PaymentNetwork::from($intent->network);
         $demoTxHash = $this->generateDemoTxHash($network);
 
-        $intent->update([
-            'tx_hash'         => $demoTxHash,
-            'tx_explorer_url' => $network->explorerUrl($demoTxHash),
-            'status'          => PaymentIntentStatus::PENDING,
-            'confirmations'   => 0,
-        ]);
+        $intent->tx_hash = $demoTxHash;
+        $intent->tx_explorer_url = $network->explorerUrl($demoTxHash);
+        $intent->confirmations = 0;
+        $intent->save();
+
+        $intent->transitionTo(PaymentIntentStatus::PENDING);
     }
 
     private function generateDemoTxHash(PaymentNetwork $network): string

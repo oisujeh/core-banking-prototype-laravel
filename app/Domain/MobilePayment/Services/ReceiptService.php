@@ -38,37 +38,34 @@ class ReceiptService
             return null;
         }
 
-        // Check for existing receipt
-        $existing = PaymentReceipt::where('payment_intent_id', $intent->id)
-            ->where('user_id', $userId)
-            ->first();
-
-        if ($existing) {
-            return $existing;
-        }
-
-        // Generate new receipt
-        $receipt = PaymentReceipt::create([
-            'public_id'         => 'rcpt_' . Str::random(24),
-            'payment_intent_id' => $intent->id,
-            'user_id'           => $userId,
-            'merchant_name'     => $intent->merchant->display_name ?? 'Unknown Merchant',
-            'amount'            => $intent->amount,
-            'asset'             => $intent->asset,
-            'network'           => $intent->network,
-            'tx_hash'           => $intent->tx_hash,
-            'network_fee'       => $this->formatNetworkFee($intent),
-            'share_token'       => Str::random(64),
-            'transaction_at'    => $intent->confirmed_at ?? $intent->created_at,
-        ]);
-
-        // Cache receipt for configured TTL
-        $cacheHours = (int) config('mobile_payment.receipt_cache_hours', 24);
-        Cache::put(
-            "receipt:{$receipt->public_id}",
-            $receipt->toApiResponse(),
-            now()->addHours($cacheHours)
+        // Use firstOrCreate to prevent TOCTOU race condition on duplicate receipts
+        $receipt = PaymentReceipt::firstOrCreate(
+            [
+                'payment_intent_id' => $intent->id,
+                'user_id'           => $userId,
+            ],
+            [
+                'public_id'      => 'rcpt_' . Str::random(24),
+                'merchant_name'  => $intent->merchant->display_name ?? 'Unknown Merchant',
+                'amount'         => $intent->amount,
+                'asset'          => $intent->asset,
+                'network'        => $intent->network,
+                'tx_hash'        => $intent->tx_hash,
+                'network_fee'    => $this->formatNetworkFee($intent),
+                'share_token'    => Str::random(64),
+                'transaction_at' => $intent->confirmed_at ?? $intent->created_at,
+            ],
         );
+
+        // Cache if newly created
+        if ($receipt->wasRecentlyCreated) {
+            $cacheHours = (int) config('mobile_payment.receipt_cache_hours', 24);
+            Cache::put(
+                "receipt:{$receipt->public_id}",
+                $receipt->toApiResponse(),
+                now()->addHours($cacheHours)
+            );
+        }
 
         return $receipt;
     }
@@ -98,10 +95,10 @@ class ReceiptService
     {
         $fees = $intent->fees_estimate;
 
-        if (! $fees || ! isset($fees['network_fee'])) {
-            return '~$0.001';
+        if (! $fees || ! isset($fees['usdApprox'])) {
+            return '0.01 USD';
         }
 
-        return '~$' . number_format((float) $fees['network_fee'], 3);
+        return $fees['usdApprox'] . ' USD';
     }
 }

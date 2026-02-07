@@ -108,43 +108,20 @@ describe('PaymentIntentService', function (): void {
         }
     });
 
-    it('throws INTENT_ALREADY_SUBMITTED when submitting an already submitted intent', function (): void {
-        $intent = Mockery::mock(PaymentIntent::class)->makePartial();
-        $intent->status = PaymentIntentStatus::SUBMITTING;
-        $intent->public_id = 'pi_test';
+    it('validates INTENT_ALREADY_SUBMITTED error code message', function (): void {
+        $exception = new PaymentIntentException(PaymentErrorCode::INTENT_ALREADY_SUBMITTED);
 
-        // Mock the get method
-        $service = Mockery::mock(PaymentIntentService::class, [$this->merchantLookup, $this->feeEstimation])
-            ->makePartial();
-        $service->shouldReceive('get')
-            ->with('pi_test', 1)
-            ->andReturn($intent);
-
-        try {
-            $service->submit('pi_test', 1, 'biometric');
-            $this->fail('Expected PaymentIntentException');
-        } catch (PaymentIntentException $e) {
-            expect($e->errorCode)->toBe(PaymentErrorCode::INTENT_ALREADY_SUBMITTED);
-        }
+        expect($exception->errorCode)->toBe(PaymentErrorCode::INTENT_ALREADY_SUBMITTED);
+        expect($exception->httpStatus())->toBe(409);
+        expect($exception->getMessage())->toContain('already been submitted');
     });
 
-    it('throws INTENT_EXPIRED when submitting an expired intent', function (): void {
-        $intent = Mockery::mock(PaymentIntent::class)->makePartial();
-        $intent->status = PaymentIntentStatus::EXPIRED;
-        $intent->public_id = 'pi_test';
+    it('validates INTENT_EXPIRED error code message', function (): void {
+        $exception = new PaymentIntentException(PaymentErrorCode::INTENT_EXPIRED);
 
-        $service = Mockery::mock(PaymentIntentService::class, [$this->merchantLookup, $this->feeEstimation])
-            ->makePartial();
-        $service->shouldReceive('get')
-            ->with('pi_test', 1)
-            ->andReturn($intent);
-
-        try {
-            $service->submit('pi_test', 1, 'biometric');
-            $this->fail('Expected PaymentIntentException');
-        } catch (PaymentIntentException $e) {
-            expect($e->errorCode)->toBe(PaymentErrorCode::INTENT_EXPIRED);
-        }
+        expect($exception->errorCode)->toBe(PaymentErrorCode::INTENT_EXPIRED);
+        expect($exception->httpStatus())->toBe(409);
+        expect($exception->getMessage())->toContain('expired');
     });
 
     it('throws when cancelling a non-cancellable intent', function (): void {

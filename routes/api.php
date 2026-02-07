@@ -1279,6 +1279,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'check.token.expiration'])->gro
         ->middleware('transaction.rate_limit:payment_submit')
         ->name('mobile.payments.intents.submit');
     Route::post('/payments/intents/{intentId}/cancel', [PaymentIntentController::class, 'cancel'])
+        ->middleware('transaction.rate_limit:payment_submit')
         ->name('mobile.payments.intents.cancel');
 
     // Activity Feed

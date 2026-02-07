@@ -41,6 +41,6 @@ class ReceiptController extends Controller
         return response()->json([
             'success' => true,
             'data'    => $receipt->toApiResponse(),
-        ], 201);
+        ]);
     }
 }

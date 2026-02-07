@@ -8,6 +8,9 @@ use App\Domain\Commerce\Models\Merchant;
 use App\Domain\MobilePayment\Enums\PaymentAsset;
 use App\Domain\MobilePayment\Enums\PaymentIntentStatus;
 use App\Domain\MobilePayment\Enums\PaymentNetwork;
+use App\Domain\MobilePayment\Events\PaymentIntentCancelled;
+use App\Domain\MobilePayment\Events\PaymentIntentConfirmed;
+use App\Domain\MobilePayment\Events\PaymentIntentFailed;
 use App\Domain\MobilePayment\Exceptions\InvalidStateTransitionException;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Concerns\HasUuids;
@@ -60,20 +63,20 @@ class PaymentIntent extends Model
         'status',
         'shield_enabled',
         'fees_estimate',
-        'tx_hash',
-        'tx_explorer_url',
-        'confirmations',
         'required_confirmations',
-        'error_code',
-        'error_message',
-        'cancel_reason',
         'idempotency_key',
         'metadata',
         'expires_at',
-        'submitted_at',
-        'confirmed_at',
-        'failed_at',
-        'cancelled_at',
+    ];
+
+    /** @var list<string> */
+    protected $hidden = [
+        'id',
+        'user_id',
+        'merchant_id',
+        'idempotency_key',
+        'metadata',
+        'cancel_reason',
     ];
 
     protected $casts = [
@@ -128,6 +131,14 @@ class PaymentIntent extends Model
         };
 
         $this->save();
+
+        // Dispatch domain events for projectors and broadcast
+        match ($newStatus) {
+            PaymentIntentStatus::CONFIRMED => event(new PaymentIntentConfirmed($this)),
+            PaymentIntentStatus::FAILED    => event(new PaymentIntentFailed($this)),
+            PaymentIntentStatus::CANCELLED => event(new PaymentIntentCancelled($this)),
+            default                        => null,
+        };
     }
 
     /**

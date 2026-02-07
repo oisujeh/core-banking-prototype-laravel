@@ -104,8 +104,10 @@ describe('PaymentIntent Model', function (): void {
         expect($intent->getFillable())->toContain('status');
         expect($intent->getFillable())->toContain('shield_enabled');
         expect($intent->getFillable())->toContain('idempotency_key');
-        expect($intent->getFillable())->toContain('tx_hash');
-        expect($intent->getFillable())->toContain('error_code');
+        // Sensitive fields should NOT be mass-assignable
+        expect($intent->getFillable())->not->toContain('tx_hash');
+        expect($intent->getFillable())->not->toContain('error_code');
+        expect($intent->getFillable())->not->toContain('confirmed_at');
     });
 
     it('uses UUID primary key', function (): void {
