@@ -13,7 +13,7 @@ return new class () extends Migration {
             $table->boolean('passkey_enabled')->default(false)->after('biometric_blocked_until');
             $table->text('passkey_credential_id')->nullable()->after('passkey_enabled');
             $table->text('passkey_public_key')->nullable()->after('passkey_credential_id');
-            $table->timestamp('passkey_enabled_at')->nullable()->after('passkey_public_key');
+            $table->dateTime('passkey_enabled_at')->nullable()->after('passkey_public_key');
         });
     }
 

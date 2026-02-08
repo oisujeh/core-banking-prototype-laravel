@@ -25,8 +25,8 @@ return new class () extends Migration {
             $table->json('errors')->nullable();
             $table->json('tables_migrated')->nullable();
             $table->string('status', 50)->default('pending');
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
 
             $table->foreign('tenant_id')
@@ -50,8 +50,8 @@ return new class () extends Migration {
             $table->json('errors')->nullable();
             $table->json('tables_imported')->nullable();
             $table->string('status', 50)->default('pending');
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
 
             $table->foreign('tenant_id')
@@ -72,8 +72,8 @@ return new class () extends Migration {
             $table->integer('record_count')->default(0);
             $table->json('tables_exported')->nullable();
             $table->string('status', 50)->default('pending');
-            $table->timestamp('started_at')->nullable();
-            $table->timestamp('completed_at')->nullable();
+            $table->dateTime('started_at')->nullable();
+            $table->dateTime('completed_at')->nullable();
             $table->timestamps();
 
             $table->foreign('tenant_id')
