@@ -63,8 +63,8 @@ describe('SpendingAnalysisTool', function (): void {
             $this->nlpService->shouldReceive('processQuery')
                 ->once()
                 ->andReturn([
-                    'intent'     => 'transaction_query',
-                    'entities'   => [
+                    'intent'   => 'transaction_query',
+                    'entities' => [
                         ['type' => 'category', 'value' => 'groceries'],
                     ],
                     'confidence' => 0.9,

@@ -6,6 +6,7 @@ namespace App\Domain\AI\Services;
 
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Analyzes natural language query results and transforms parsed intents/entities
@@ -172,7 +173,7 @@ class TransactionQueryAnalyzerService
             $filters['date_from'] = $date->startOfDay()->toIso8601String();
             $filters['date_to'] = $date->endOfDay()->toIso8601String();
         } catch (Exception $e) {
-            // Skip invalid dates
+            Log::debug('Failed to parse date filter', ['value' => $value, 'error' => $e->getMessage()]);
         }
     }
 
@@ -187,14 +188,14 @@ class TransactionQueryAnalyzerService
                 try {
                     $filters['date_from'] = Carbon::parse((string) $value['start'])->startOfDay()->toIso8601String();
                 } catch (Exception $e) {
-                    // Skip
+                    Log::debug('Failed to parse date range start', ['value' => $value['start'], 'error' => $e->getMessage()]);
                 }
             }
             if (isset($value['end'])) {
                 try {
                     $filters['date_to'] = Carbon::parse((string) $value['end'])->endOfDay()->toIso8601String();
                 } catch (Exception $e) {
-                    // Skip
+                    Log::debug('Failed to parse date range end', ['value' => $value['end'], 'error' => $e->getMessage()]);
                 }
             }
         }

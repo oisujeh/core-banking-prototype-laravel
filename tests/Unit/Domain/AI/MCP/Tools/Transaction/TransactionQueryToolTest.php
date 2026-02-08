@@ -89,8 +89,8 @@ describe('TransactionQueryTool', function (): void {
             $this->nlpService->shouldReceive('processQuery')
                 ->once()
                 ->andReturn([
-                    'intent'      => 'transaction_query',
-                    'entities'    => [
+                    'intent'   => 'transaction_query',
+                    'entities' => [
                         ['type' => 'amount', 'value' => 100],
                     ],
                     'confidence'  => 0.85,

@@ -10,6 +10,7 @@ use App\Domain\Relayer\Contracts\WalletBalanceProviderInterface;
 use App\Domain\Relayer\Enums\SupportedNetwork;
 use App\Domain\Relayer\Events\TransactionSponsored;
 use App\Domain\Relayer\ValueObjects\UserOperation;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Log;
 use RuntimeException;
@@ -103,34 +104,36 @@ class GasStationService
             signature: $signature,
         );
 
-        // 8. Submit to bundler
-        $userOpHash = $this->bundler->submitUserOperation($finalUserOp, $network);
+        // 8. Submit to bundler and deduct fee atomically
+        return DB::transaction(function () use ($finalUserOp, $network, $userAddress, $feeToken, $feeAmount, $gasEstimate, $isDeployment): array {
+            $userOpHash = $this->bundler->submitUserOperation($finalUserOp, $network);
 
-        // 9. Deduct fee from user's stablecoin balance
-        $this->deductFee($userAddress, $feeToken, $feeAmount, $network);
+            // 9. Deduct fee from user's stablecoin balance
+            $this->deductFee($userAddress, $feeToken, $feeAmount, $network);
 
-        Log::info('Transaction sponsored successfully', [
-            'user_op_hash' => $userOpHash,
-            'fee_charged'  => $feeAmount,
-            'fee_token'    => $feeToken,
-        ]);
+            Log::info('Transaction sponsored successfully', [
+                'user_op_hash' => $userOpHash,
+                'fee_charged'  => $feeAmount,
+                'fee_token'    => $feeToken,
+            ]);
 
-        Event::dispatch(new TransactionSponsored(
-            userAddress: $userAddress,
-            userOpHash: $userOpHash,
-            network: $network,
-            feeAmount: $feeAmount,
-            feeToken: $feeToken,
-        ));
+            Event::dispatch(new TransactionSponsored(
+                userAddress: $userAddress,
+                userOpHash: $userOpHash,
+                network: $network,
+                feeAmount: $feeAmount,
+                feeToken: $feeToken,
+            ));
 
-        return [
-            'tx_hash'       => '', // Will be available after bundler processes
-            'user_op_hash'  => $userOpHash,
-            'gas_used'      => $gasEstimate['callGasLimit'] + $gasEstimate['verificationGasLimit'],
-            'fee_charged'   => number_format($feeAmount, 6),
-            'fee_currency'  => $feeToken,
-            'is_deployment' => $isDeployment,
-        ];
+            return [
+                'tx_hash'       => '', // Will be available after bundler processes
+                'user_op_hash'  => $userOpHash,
+                'gas_used'      => $gasEstimate['callGasLimit'] + $gasEstimate['verificationGasLimit'],
+                'fee_charged'   => number_format($feeAmount, 6),
+                'fee_currency'  => $feeToken,
+                'is_deployment' => $isDeployment,
+            ];
+        });
     }
 
     /**
