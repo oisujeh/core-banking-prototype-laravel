@@ -23,11 +23,11 @@ git branch --show-current
 ### Current Session State (Update After Each Session)
 | Item | Status |
 |------|--------|
-| Current Branch | `main` |
+| Current Branch | `release/v2.8.0` |
 | Open PRs | None |
 | Open Issues | None |
-| Last Action | v2.7.0 released (Mobile Payment API, Passkey Auth, P2P Transfer, PRs #387-#396) |
-| Next Action | Plan and implement v2.8.0 (AI Query Endpoints, RegTech Adapters, SDK Generation, BaaS) |
+| Last Action | v2.8.0 released (AI Query Endpoints, RegTech Adapters, MiFID/MiCA/Travel Rule, PRs #397-#400) |
+| Next Action | Plan and implement v2.9.0 (BaaS Implementation, SDK Generation, Production Hardening) |
 | Session Date | February 8, 2026 |
 
 ### Recent Commits (as of Feb 6, 2026)
@@ -76,7 +76,8 @@ git branch --show-current
 | **v2.5.0** | ✅ RELEASED | Mobile App Launch | Expo/React Native mobile app (separate repo) |
 | **v2.6.0** | ✅ RELEASED | Privacy Layer & Relayer | Merkle Trees, Smart Accounts, Delegated Proofs, UserOp Signing, Security Hardening (PR #382) |
 | **v2.7.0** | ✅ RELEASED | Mobile Payment API | Payment Intents, Passkey Auth, P2P Transfer, TrustCert Export, Security Hardening (PRs #387-#396) |
-| **v2.8.0** | 📋 PLANNED | AI Query & BaaS | AI Query Endpoints, RegTech Adapters, SDK Generation, BaaS Implementation |
+| **v2.8.0** | ✅ RELEASED | AI Query & RegTech | AI Query Endpoints, RegTech Adapters, MiFID/MiCA/Travel Rule (PRs #397-#400) |
+| **v2.9.0** | 📋 PLANNED | BaaS & Hardening | ML Anomaly Detection, SDK Generation, BaaS, Production Hardening |
 
 ### v2.2.0 Completed PRs (All Merged)
 - #347: Mobile Backend Core (Device, Biometric, Push)
@@ -166,6 +167,11 @@ git branch --show-current
 | Passkey Auth | `PasskeyAuthenticationService` | `app/Domain/Mobile/Services/` |
 | Wallet Transfer | `WalletTransferService` | `app/Domain/Wallet/Services/` |
 | Certificate Export | `CertificateExportService` | `app/Domain/TrustCert/Services/` |
+| MiFID II Reporting | `MifidReportingService` | `app/Domain/RegTech/Services/` |
+| MiCA Compliance | `MicaComplianceService` | `app/Domain/RegTech/Services/` |
+| Travel Rule | `TravelRuleService` | `app/Domain/RegTech/Services/` |
+| RegTech Orchestration | `RegTechOrchestrationService` | `app/Domain/RegTech/Services/` |
+| AI Transaction Query | `TransactionQueryTool` | `app/Domain/AI/Tools/` |
 
 ### MCP Tools (Already Exist)
 - `AgentPaymentTool` - Payment operations
@@ -284,6 +290,7 @@ app/Domain/
 ├── Monitoring/     # Distributed tracing, metrics
 ├── Privacy/        # ZK-KYC, Merkle Trees, Delegated Proofs (v2.4.0+v2.6.0)
 ├── MobilePayment/  # Payment Intents, Receipts, Activity Feed (v2.7.0)
+├── RegTech/        # MiFID II, MiCA, Travel Rule, Jurisdiction Adapters (v2.8.0)
 ├── Relayer/        # ERC-4337 Gas Abstraction, Smart Accounts (v2.6.0)
 ├── Stablecoin/     # Token lifecycle
 ├── Treasury/       # Portfolio, yield optimization

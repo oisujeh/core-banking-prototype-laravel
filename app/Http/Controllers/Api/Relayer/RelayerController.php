@@ -115,7 +115,7 @@ class RelayerController extends Controller
                 'success' => false,
                 'error'   => [
                     'code'    => $errorCode,
-                    'message' => $e->getMessage(),
+                    'message' => 'Transaction sponsorship failed. Please try again or contact support.',
                 ],
             ], 400);
         }
@@ -172,11 +172,15 @@ class RelayerController extends Controller
                 'data'    => $estimate,
             ]);
         } catch (Throwable $e) {
+            Log::error('Gas estimation failed', [
+                'error' => $e->getMessage(),
+            ]);
+
             return response()->json([
                 'success' => false,
                 'error'   => [
                     'code'    => 'ERR_RELAYER_002',
-                    'message' => $e->getMessage(),
+                    'message' => 'Gas estimation failed. Please try again later.',
                 ],
             ], 400);
         }

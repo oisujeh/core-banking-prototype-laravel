@@ -1266,10 +1266,10 @@ Route::prefix('v1/privacy')->name('api.privacy.')->group(function () {
     Route::get('/srs-manifest', [PrivacyController::class, 'getSrsManifest'])->name('srs-manifest');
 
     // Authenticated endpoints
-    Route::middleware(['auth:sanctum', 'check.token.expiration'])->group(function () {
+    Route::middleware(['auth:sanctum', 'check.token.expiration', 'throttle:60,1'])->group(function () {
         Route::get('/merkle-root', [PrivacyController::class, 'getMerkleRoot'])->name('merkle-root');
-        Route::post('/merkle-path', [PrivacyController::class, 'getMerklePath'])->name('merkle-path');
-        Route::post('/verify-commitment', [PrivacyController::class, 'verifyCommitment'])->name('verify-commitment');
+        Route::post('/merkle-path', [PrivacyController::class, 'getMerklePath'])->middleware('throttle:10,1')->name('merkle-path');
+        Route::post('/verify-commitment', [PrivacyController::class, 'verifyCommitment'])->middleware('throttle:10,1')->name('verify-commitment');
         Route::post('/sync', [PrivacyController::class, 'syncTree'])
             ->middleware('transaction.rate_limit:privacy_sync')
             ->name('sync');
@@ -1361,7 +1361,7 @@ Route::prefix('v1')->middleware(['auth:sanctum', 'check.token.expiration'])->gro
 |
 */
 Route::prefix('v1/auth/passkey')
-    ->middleware('throttle:10,1')
+    ->middleware('throttle:5,1')
     ->name('mobile.auth.passkey.')
     ->group(function () {
         Route::post('/challenge', [Auth\PasskeyController::class, 'challenge'])->name('challenge');
