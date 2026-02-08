@@ -27,7 +27,7 @@ return new class () extends Migration {
             $table->uuid('reference_id')->nullable()->comment('Polymorphic ID');
             $table->string('from_address', 64)->nullable();
             $table->string('to_address', 64)->nullable();
-            $table->timestamp('occurred_at');
+            $table->dateTime('occurred_at');
             $table->json('metadata')->nullable();
             $table->timestamps();
 

@@ -24,6 +24,7 @@ return [
         'http://localhost:3000',
         'http://localhost:8080',
         'http://localhost:5173',
+        'http://localhost:8081',
         // Production origins
         'https://finaegis.org',
         'https://www.finaegis.org',

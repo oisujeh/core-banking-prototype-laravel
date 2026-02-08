@@ -25,7 +25,7 @@ return new class () extends Migration {
             $table->string('network_fee', 50)->comment('Display string like "0.01 USD"');
             $table->string('pdf_path')->nullable();
             $table->string('share_token', 64)->unique();
-            $table->timestamp('transaction_at');
+            $table->dateTime('transaction_at');
             $table->timestamps();
 
             $table->index(['user_id', 'created_at']);

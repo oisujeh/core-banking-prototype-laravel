@@ -32,11 +32,11 @@ return new class () extends Migration {
             $table->string('cancel_reason', 50)->nullable();
             $table->string('idempotency_key', 128)->nullable()->unique();
             $table->json('metadata')->nullable();
-            $table->timestamp('expires_at');
-            $table->timestamp('submitted_at')->nullable();
-            $table->timestamp('confirmed_at')->nullable();
-            $table->timestamp('failed_at')->nullable();
-            $table->timestamp('cancelled_at')->nullable();
+            $table->dateTime('expires_at');
+            $table->dateTime('submitted_at')->nullable();
+            $table->dateTime('confirmed_at')->nullable();
+            $table->dateTime('failed_at')->nullable();
+            $table->dateTime('cancelled_at')->nullable();
             $table->timestamps();
 
             $table->index(['user_id', 'created_at']);
