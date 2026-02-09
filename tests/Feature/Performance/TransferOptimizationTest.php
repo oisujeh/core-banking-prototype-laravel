@@ -15,18 +15,26 @@ beforeEach(function () {
     $this->account1 = Account::factory()->zeroBalance()->create();
     $this->account2 = Account::factory()->zeroBalance()->create();
 
-    // Create balances
-    AccountBalance::create([
-        'account_uuid' => $this->account1->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 100000, // $1000
-    ]);
+    // Update balances (use updateOrCreate since zeroBalance() factory state already creates AccountBalance records)
+    AccountBalance::updateOrCreate(
+        [
+            'account_uuid' => $this->account1->uuid,
+            'asset_code'   => 'USD',
+        ],
+        [
+            'balance' => 100000, // $1000
+        ]
+    );
 
-    AccountBalance::create([
-        'account_uuid' => $this->account2->uuid,
-        'asset_code'   => 'USD',
-        'balance'      => 50000, // $500
-    ]);
+    AccountBalance::updateOrCreate(
+        [
+            'account_uuid' => $this->account2->uuid,
+            'asset_code'   => 'USD',
+        ],
+        [
+            'balance' => 50000, // $500
+        ]
+    );
 
     $this->optimizationService = app(TransferOptimizationService::class);
 });
