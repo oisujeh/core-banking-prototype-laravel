@@ -1379,5 +1379,37 @@ Route::prefix('v1/auth/passkey')
 |
 */
 Route::prefix('partner/v1')->name('api.partner.')->middleware('partner.auth')->group(function () {
-    // Partner API routes will be added in feature/baas-api-routes
+    // Dashboard
+    Route::get('/profile', [App\Http\Controllers\Api\Partner\PartnerDashboardController::class, 'profile'])->name('profile');
+    Route::get('/usage', [App\Http\Controllers\Api\Partner\PartnerDashboardController::class, 'usage'])->name('usage');
+    Route::get('/usage/history', [App\Http\Controllers\Api\Partner\PartnerDashboardController::class, 'usageHistory'])->name('usage.history');
+    Route::get('/tier', [App\Http\Controllers\Api\Partner\PartnerDashboardController::class, 'tier'])->name('tier');
+    Route::get('/tier/comparison', [App\Http\Controllers\Api\Partner\PartnerDashboardController::class, 'tierComparison'])->name('tier.comparison');
+    Route::get('/branding', [App\Http\Controllers\Api\Partner\PartnerDashboardController::class, 'branding'])->name('branding');
+    Route::put('/branding', [App\Http\Controllers\Api\Partner\PartnerDashboardController::class, 'updateBranding'])->name('branding.update');
+
+    // SDK
+    Route::get('/sdk/languages', [App\Http\Controllers\Api\Partner\PartnerSdkController::class, 'languages'])->name('sdk.languages');
+    Route::post('/sdk/generate', [App\Http\Controllers\Api\Partner\PartnerSdkController::class, 'generate'])->name('sdk.generate');
+    Route::get('/sdk/openapi-spec', [App\Http\Controllers\Api\Partner\PartnerSdkController::class, 'openapiSpec'])->name('sdk.openapi-spec');
+    Route::get('/sdk/{language}', [App\Http\Controllers\Api\Partner\PartnerSdkController::class, 'status'])->name('sdk.status');
+
+    // Widgets
+    Route::get('/widgets', [App\Http\Controllers\Api\Partner\PartnerWidgetController::class, 'index'])->name('widgets.index');
+    Route::post('/widgets/{type}/embed', [App\Http\Controllers\Api\Partner\PartnerWidgetController::class, 'embed'])->name('widgets.embed');
+    Route::get('/widgets/{type}/preview', [App\Http\Controllers\Api\Partner\PartnerWidgetController::class, 'preview'])->name('widgets.preview');
+
+    // Billing
+    Route::get('/billing/invoices', [App\Http\Controllers\Api\Partner\PartnerBillingController::class, 'invoices'])->name('billing.invoices');
+    Route::get('/billing/invoices/{id}', [App\Http\Controllers\Api\Partner\PartnerBillingController::class, 'invoice'])->name('billing.invoice');
+    Route::get('/billing/outstanding', [App\Http\Controllers\Api\Partner\PartnerBillingController::class, 'outstanding'])->name('billing.outstanding');
+    Route::get('/billing/breakdown', [App\Http\Controllers\Api\Partner\PartnerBillingController::class, 'breakdown'])->name('billing.breakdown');
+
+    // Marketplace
+    Route::get('/marketplace', [App\Http\Controllers\Api\Partner\PartnerMarketplaceController::class, 'index'])->name('marketplace.index');
+    Route::get('/marketplace/integrations', [App\Http\Controllers\Api\Partner\PartnerMarketplaceController::class, 'integrations'])->name('marketplace.integrations');
+    Route::post('/marketplace/integrations', [App\Http\Controllers\Api\Partner\PartnerMarketplaceController::class, 'enable'])->name('marketplace.integrations.enable');
+    Route::delete('/marketplace/integrations/{id}', [App\Http\Controllers\Api\Partner\PartnerMarketplaceController::class, 'disable'])->name('marketplace.integrations.disable');
+    Route::post('/marketplace/integrations/{id}/test', [App\Http\Controllers\Api\Partner\PartnerMarketplaceController::class, 'test'])->name('marketplace.integrations.test');
+    Route::get('/marketplace/health', [App\Http\Controllers\Api\Partner\PartnerMarketplaceController::class, 'health'])->name('marketplace.health');
 });
