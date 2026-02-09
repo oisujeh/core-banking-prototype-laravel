@@ -1430,25 +1430,27 @@ GET    /api/v1/trustcert/verify/{token} # Verify presentation
 **Target**: Q2 2026
 **Theme**: Banking-as-a-Service + Production Readiness
 
-### Phase 1: ML Anomaly Detection
+### Phase 1: ML Anomaly Detection ✅ COMPLETE
 
 | Component | Description | Status |
 |-----------|-------------|--------|
-| `StatisticalAnomalyActivity` | Z-score, IQR-based detection | 📋 |
-| `BehavioralProfileActivity` | User baseline comparison | 📋 |
-| `VelocityAnomalyActivity` | Transaction frequency analysis | 📋 |
-| `GeolocationAnomalyActivity` | Location-based anomalies | 📋 |
-| Database | `user_behavioral_profiles`, `anomaly_detections` | 📋 |
+| `StatisticalAnomalyActivity` | Z-score, IQR-based detection | ✅ |
+| `BehavioralProfileActivity` | User baseline comparison | ✅ |
+| `VelocityAnomalyActivity` | Transaction frequency analysis | ✅ |
+| `GeolocationAnomalyActivity` | Location-based anomalies | ✅ |
+| Database | `user_behavioral_profiles`, `anomaly_detections` | ✅ |
 
-### Phase 2: BaaS Implementation
+### Phase 2: BaaS Implementation ✅ COMPLETE
 
-| Component | Description | Status |
-|-----------|-------------|--------|
-| `SDKGeneratorService` | Auto-generate TypeScript, Python, Java, Go SDKs | 📋 |
-| Embeddable Widgets | Payment, Checkout, Balance, Transfer widgets | 📋 |
-| `PartnerUsageMeteringService` | API usage tracking | 📋 |
-| `PartnerBillingService` | Invoice generation | 📋 |
-| Partner Marketplace | Integration connectors | 📋 |
+| Component | Description | Status | PR |
+|-----------|-------------|--------|-----|
+| `PartnerUsageMeteringService` | API usage tracking + auth middleware | ✅ | #429 |
+| `PartnerBillingService` | Invoice generation with overage + discounts | ✅ | #430 |
+| `SdkGeneratorService` | Auto-generate TypeScript, Python, Java, Go, PHP SDKs | ✅ | #431 |
+| `EmbeddableWidgetService` | Payment, Checkout, Balance, Transfer, Account widgets | ✅ | #432 |
+| `PartnerMarketplaceService` | Integration connectors + `PartnerIntegration` model | ✅ | #433 |
+| Partner API Controllers | 5 controllers, 26 endpoints under `/api/partner/v1` | ✅ | #434 |
+| Integration Tests | End-to-end BaaS workflow tests | ✅ | #435 |
 
 ### Phase 3: Production Hardening
 
@@ -1461,7 +1463,7 @@ GET    /api/v1/trustcert/verify/{token} # Verify presentation
 
 ---
 
-*Document Version: 2.8*
+*Document Version: 2.9*
 *Created: January 11, 2026*
-*Updated: February 8, 2026 (v2.8.0 Released)*
-*Next Review: v2.9.0 Implementation*
+*Updated: February 9, 2026 (v2.9.0 Phase 2 Completed)*
+*Next Review: v2.9.0 Phase 3 Implementation*
