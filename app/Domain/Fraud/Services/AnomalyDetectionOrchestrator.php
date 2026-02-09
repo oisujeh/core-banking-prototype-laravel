@@ -41,6 +41,9 @@ class AnomalyDetectionOrchestrator
             ];
         }
 
+        // Validate and sanitize context inputs
+        $context = $this->sanitizeContext($context);
+
         // Look up behavioral profile for the user
         $profile = $userId ? BehavioralProfile::where('user_id', $userId)->first() : null;
 
@@ -376,10 +379,14 @@ class AnomalyDetectionOrchestrator
                 'severity'         => AnomalyDetection::calculateSeverity($score),
                 'features'         => $result['details'] ?? [],
                 'explanation'      => $this->generateExplanation($result),
-                'context_snapshot' => array_intersect_key($context, array_flip([
-                    'amount', 'type', 'ip', 'ip_country', 'lat', 'lon',
-                    'daily_transaction_count', 'daily_transaction_volume',
-                ])),
+                'context_snapshot' => [
+                    'amount'                   => $context['amount'] ?? null,
+                    'type'                     => $context['type'] ?? null,
+                    'ip_hash'                  => isset($context['ip']) ? hash('sha256', $context['ip']) : null,
+                    'ip_country'               => $context['ip_country'] ?? null,
+                    'daily_transaction_count'  => $context['daily_transaction_count'] ?? null,
+                    'daily_transaction_volume' => $context['daily_transaction_volume'] ?? null,
+                ],
                 'is_real_time'   => true,
                 'fraud_score_id' => $fraudScoreId,
                 'model_version'  => config('fraud.anomaly_detection.model_version', '1.0.0'),
@@ -431,6 +438,54 @@ class AnomalyDetectionOrchestrator
             'method'  => $method,
             'score'   => $score,
         ];
+    }
+
+    /**
+     * Sanitize and validate context inputs to prevent invalid calculations.
+     */
+    protected function sanitizeContext(array $context): array
+    {
+        // Clamp lat/lon to valid ranges
+        if (isset($context['lat'])) {
+            $context['lat'] = max(-90.0, min(90.0, (float) $context['lat']));
+        }
+        if (isset($context['lon'])) {
+            $context['lon'] = max(-180.0, min(180.0, (float) $context['lon']));
+        }
+        if (isset($context['last_lat'])) {
+            $context['last_lat'] = max(-90.0, min(90.0, (float) $context['last_lat']));
+        }
+        if (isset($context['last_lon'])) {
+            $context['last_lon'] = max(-180.0, min(180.0, (float) $context['last_lon']));
+        }
+
+        // Ensure non-negative time difference
+        if (isset($context['time_diff_seconds'])) {
+            $context['time_diff_seconds'] = max(0, (int) $context['time_diff_seconds']);
+        }
+
+        // Ensure non-negative amount
+        if (isset($context['amount']) && is_numeric($context['amount']) && $context['amount'] < 0) {
+            $context['amount'] = 0;
+        }
+
+        // Bound location_history size
+        if (isset($context['location_history']) && is_array($context['location_history'])) {
+            $maxPoints = (int) config('fraud.geolocation.geo_cluster.max_points', 1000);
+            if (count($context['location_history']) > $maxPoints) {
+                $context['location_history'] = array_slice($context['location_history'], -$maxPoints);
+            }
+        }
+
+        // Bound transaction_history size
+        if (isset($context['transaction_history']) && is_array($context['transaction_history'])) {
+            $maxHistory = (int) config('fraud.statistical.max_history_size', 1000);
+            if (count($context['transaction_history']) > $maxHistory) {
+                $context['transaction_history'] = array_slice($context['transaction_history'], -$maxHistory);
+            }
+        }
+
+        return $context;
     }
 
     /**

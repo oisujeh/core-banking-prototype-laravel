@@ -9,8 +9,8 @@ return [
     |--------------------------------------------------------------------------
     */
     'anomaly_detection' => [
-        'enabled'   => env('FRAUD_ANOMALY_DETECTION_ENABLED', true),
-        'demo_mode' => env('FRAUD_ANOMALY_DEMO_MODE', true),
+        'enabled'   => env('FRAUD_ANOMALY_DETECTION_ENABLED', false),
+        'demo_mode' => env('FRAUD_ANOMALY_DEMO_MODE', false),
     ],
 
     /*
@@ -25,6 +25,7 @@ return [
         'lof_neighbors'                  => (int) env('FRAUD_LOF_NEIGHBORS', 20),
         'history_days'                   => 90,
         'min_samples'                    => 10,
+        'max_history_size'               => 1000,
     ],
 
     /*
@@ -77,9 +78,11 @@ return [
     'geolocation' => [
         'impossible_travel_max_speed_kmh' => (float) env('FRAUD_MAX_TRAVEL_SPEED', 900.0),
         'ip_reputation_threshold'         => (float) env('FRAUD_IP_REPUTATION_THRESHOLD', 0.6),
+        'high_risk_countries'             => array_filter(explode(',', env('FRAUD_HIGH_RISK_COUNTRIES', ''))),
         'geo_cluster'                     => [
             'eps_km'                       => 50.0,
             'min_points'                   => 3,
+            'max_points'                   => 1000,
             'max_distance_from_cluster_km' => 500.0,
         ],
     ],

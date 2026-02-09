@@ -44,7 +44,16 @@ class ProcessAnomalyBatchJob implements ShouldQueue
             ->get();
 
         $processed = 0;
+        $failed = 0;
         $anomaliesFound = 0;
+
+        if ($transactions->count() !== count($this->transactionIds)) {
+            Log::warning('Batch job transaction count mismatch', [
+                'pipeline_run_id' => $this->pipelineRunId,
+                'expected'        => count($this->transactionIds),
+                'found'           => $transactions->count(),
+            ]);
+        }
 
         foreach ($transactions as $transaction) {
             try {
@@ -81,6 +90,7 @@ class ProcessAnomalyBatchJob implements ShouldQueue
                     $anomaliesFound++;
                 }
             } catch (Exception $e) {
+                $failed++;
                 Log::warning('Batch anomaly scan failed for transaction', [
                     'transaction_id'  => $transaction->id,
                     'pipeline_run_id' => $this->pipelineRunId,
@@ -89,12 +99,20 @@ class ProcessAnomalyBatchJob implements ShouldQueue
             }
         }
 
-        Log::info('Anomaly batch chunk completed', [
+        $totalAttempted = $processed + $failed;
+        $logContext = [
             'pipeline_run_id' => $this->pipelineRunId,
             'processed'       => $processed,
+            'failed'          => $failed,
             'anomalies_found' => $anomaliesFound,
             'total_in_chunk'  => count($this->transactionIds),
-        ]);
+        ];
+
+        if ($totalAttempted > 0 && ($failed / $totalAttempted) > 0.5) {
+            Log::error('Anomaly batch chunk has high failure rate', $logContext);
+        } else {
+            Log::info('Anomaly batch chunk completed', $logContext);
+        }
     }
 
     public function failed(Throwable $exception): void
