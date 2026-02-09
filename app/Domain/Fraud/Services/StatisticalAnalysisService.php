@@ -93,7 +93,9 @@ class StatisticalAnalysisService
     {
         $multiplier = (float) config('fraud.statistical.iqr_multiplier', 1.5);
         $amount = (float) ($context['amount'] ?? 0);
+        $maxHistory = (int) config('fraud.statistical.max_history_size', 1000);
         $history = collect($context['transaction_history'] ?? [])
+            ->take($maxHistory)
             ->pluck('amount')
             ->map(fn ($v) => (float) $v)
             ->sort()
@@ -197,7 +199,9 @@ class StatisticalAnalysisService
     {
         $k = (int) config('fraud.statistical.lof_neighbors', 20);
         $amount = (float) ($context['amount'] ?? 0);
+        $maxHistory = (int) config('fraud.statistical.max_history_size', 1000);
         $history = collect($context['transaction_history'] ?? [])
+            ->take($maxHistory)
             ->pluck('amount')
             ->map(fn ($v) => (float) $v)
             ->sort()

@@ -67,6 +67,11 @@ class GeoMathService
      */
     public function clusterLocations(array $points): array
     {
+        $maxPoints = (int) config('fraud.geolocation.geo_cluster.max_points', 1000);
+        if (count($points) > $maxPoints) {
+            $points = array_slice($points, -$maxPoints);
+        }
+
         $epsKm = (float) config('fraud.geolocation.geo_cluster.eps_km', 50.0);
         $minPoints = (int) config('fraud.geolocation.geo_cluster.min_points', 3);
 

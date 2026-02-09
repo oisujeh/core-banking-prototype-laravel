@@ -227,7 +227,8 @@ class BehavioralAnalysisService
                 $riskContribution = 30;
 
                 // Even higher if it's a high-risk country
-                if (in_array($country, ['NG', 'PK', 'ID', 'VN', 'BD'])) {
+                $highRiskCountries = config('fraud.geolocation.high_risk_countries', []);
+                if (! empty($highRiskCountries) && in_array($country, $highRiskCountries)) {
                     $riskContribution = 45;
                 }
             } else {

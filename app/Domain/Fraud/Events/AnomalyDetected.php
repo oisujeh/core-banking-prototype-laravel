@@ -29,8 +29,6 @@ class AnomalyDetected
             'fraud',
             'anomaly',
             'anomaly_type:' . $this->anomalyDetection->anomaly_type->value,
-            'severity:' . $this->anomalyDetection->severity,
-            'entity_type:' . class_basename($this->anomalyDetection->entity_type),
         ];
     }
 }
