@@ -1368,3 +1368,16 @@ Route::prefix('v1/auth/passkey')
         Route::post('/challenge', [PasskeyController::class, 'challenge'])->name('challenge');
         Route::post('/authenticate', [PasskeyController::class, 'authenticate'])->name('authenticate');
     });
+
+/*
+|--------------------------------------------------------------------------
+| BaaS Partner API Routes (v2.9.0)
+|--------------------------------------------------------------------------
+|
+| Partner-facing API endpoints for the Banking-as-a-Service platform.
+| Authenticated via X-Partner-Client-Id / X-Partner-Client-Secret headers.
+|
+*/
+Route::prefix('partner/v1')->name('api.partner.')->middleware('partner.auth')->group(function () {
+    // Partner API routes will be added in feature/baas-api-routes
+});
