@@ -446,7 +446,7 @@ class FraudDetectionService
      */
     protected function getDailyTransactionCount(User $user): int
     {
-        return Cache::remember(
+        return (int) Cache::remember(
             "user_daily_txn_count_{$user->id}",
             60, // 1 minute cache
             function () use ($user) {

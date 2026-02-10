@@ -8,6 +8,7 @@ includes:
     - phpstan-baseline-regtech-unit-tests.neon
     - phpstan-baseline-baas-models.neon
     - phpstan-baseline-baas-unit-tests.neon
+    - phpstan-baseline-baas-v2-tests.neon
     - phpstan-baseline-keymanagement.neon
     - phpstan-baseline-privacy.neon
     - phpstan-baseline-commerce.neon

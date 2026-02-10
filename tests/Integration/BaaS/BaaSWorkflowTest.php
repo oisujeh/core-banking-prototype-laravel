@@ -88,7 +88,7 @@ class BaaSWorkflowTest extends TestCase
     {
         $tierService = new PartnerTierService();
         $meteringService = new PartnerUsageMeteringService($tierService);
-        $billingService = new PartnerBillingService($tierService, $meteringService);
+        $billingService = new PartnerBillingService($tierService);
         $sdkService = new SdkGeneratorService($tierService);
         $widgetService = new EmbeddableWidgetService($tierService);
         $marketplaceService = new PartnerMarketplaceService();
@@ -142,7 +142,7 @@ class BaaSWorkflowTest extends TestCase
         $partner->refresh();
         $embedResult = $widgetService->generateEmbedCode($partner, 'payment');
         $this->assertTrue($embedResult['success']);
-        $this->assertStringContainsString('finaegis-payment.js', $embedResult['html']);
+        $this->assertStringContainsString('finaegis-payment.js', (string) $embedResult['html']);
 
         // Step 7: Enable marketplace integration
         $integrationResult = $marketplaceService->enableIntegration(
@@ -218,7 +218,7 @@ class BaaSWorkflowTest extends TestCase
     {
         $tierService = new PartnerTierService();
         $meteringService = new PartnerUsageMeteringService($tierService);
-        $billingService = new PartnerBillingService($tierService, $meteringService);
+        $billingService = new PartnerBillingService($tierService);
 
         $partner = $this->createPartner(['tier' => 'starter']); // 10K limit
 
