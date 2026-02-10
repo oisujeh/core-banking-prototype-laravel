@@ -76,11 +76,12 @@ class PartnerAuthMiddleware
             return $this->forbiddenResponse('Partner account is not active.');
         }
 
-        // Check IP allowlist
-        if (! $partner->isIpAllowed($request->ip())) {
+        // Check IP allowlist (skip if IP cannot be determined)
+        $ip = $request->ip();
+        if ($ip !== null && ! $partner->isIpAllowed($ip)) {
             Log::warning('Partner auth failed: IP not allowed', [
                 'partner_id' => $partner->id,
-                'ip'         => $request->ip(),
+                'ip'         => $ip,
             ]);
 
             return $this->forbiddenResponse('IP address not allowed.');

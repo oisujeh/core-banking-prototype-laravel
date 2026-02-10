@@ -8,11 +8,13 @@ includes:
     - phpstan-baseline-regtech-unit-tests.neon
     - phpstan-baseline-baas-models.neon
     - phpstan-baseline-baas-unit-tests.neon
+    - phpstan-baseline-baas-v2-tests.neon
     - phpstan-baseline-keymanagement.neon
     - phpstan-baseline-privacy.neon
     - phpstan-baseline-commerce.neon
     - phpstan-baseline-trustcert.neon
     - phpstan-baseline-compliance-projector.neon
+    - phpstan-baseline-fraud.neon
     - phpstan-baseline-level6.neon
     - phpstan-baseline-level7.neon
     - phpstan-baseline-level8.neon
