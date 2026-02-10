@@ -10,7 +10,6 @@ use App\Domain\FinancialInstitution\Models\PartnerInvoice;
 use App\Domain\FinancialInstitution\Models\PartnerUsageRecord;
 use App\Domain\FinancialInstitution\Services\PartnerBillingService;
 use App\Domain\FinancialInstitution\Services\PartnerTierService;
-use App\Domain\FinancialInstitution\Services\PartnerUsageMeteringService;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Mockery;
 use Tests\TestCase;
@@ -25,8 +24,7 @@ class PartnerBillingServiceTest extends TestCase
     {
         parent::setUp();
         $tierService = new PartnerTierService();
-        $meteringService = new PartnerUsageMeteringService($tierService);
-        $this->service = new PartnerBillingService($tierService, $meteringService);
+        $this->service = new PartnerBillingService($tierService);
     }
 
     protected function tearDown(): void

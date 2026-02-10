@@ -19,7 +19,6 @@ class PartnerBillingService
 {
     public function __construct(
         private readonly PartnerTierService $tierService,
-        private readonly PartnerUsageMeteringService $meteringService,
     ) {
     }
 
@@ -68,7 +67,7 @@ class PartnerBillingService
             'total_usd'  => $invoice->total_amount_usd,
         ]);
 
-        return $invoice->fresh();
+        return $invoice->fresh() ?? $invoice;
     }
 
     /**
