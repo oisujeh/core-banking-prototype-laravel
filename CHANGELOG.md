@@ -5,6 +5,40 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.9.1] - 2026-02-10
+
+### Production Hardening (Phase 3)
+
+Completes the deferred Phase 3 of v2.9.0 with production-grade implementations for smart contracts, ZK circuits, HSM providers, and automated security auditing.
+
+### Added
+
+#### On-Chain SBT Deployment (#441)
+- **OnChainSbtService** - ERC-5192 Soulbound Token minting/revoking on Polygon via JSON-RPC
+- **DemoOnChainSbtService** - In-memory demo implementation for development
+- Opt-in on-chain anchoring via `commerce.soulbound_tokens.on_chain_anchoring` config
+- `SoulboundTokenMintedOnChain` and `SoulboundTokenRevokedOnChain` events
+
+#### snarkjs Integration (#442)
+- **SnarkjsProverService** - Wraps snarkjs CLI via Symfony Process for groth16 prove/verify
+- **PoseidonHasher** - circomlibjs Poseidon hash via Node.js with SHA3-256 fallback
+- **ProductionMerkleTreeService** - On-chain Merkle tree sync via JSON-RPC
+- Configurable circuit mapping, hash algorithm, and proof provider selection
+
+#### AWS KMS & Azure Key Vault (#443)
+- **AwsKmsHsmProvider** - Full HsmProviderInterface via aws-sdk-php with DER-to-compact ECDSA conversion
+- **AzureKeyVaultHsmProvider** - Full HsmProviderInterface via Azure Key Vault REST API v7.4 with OAuth2 auth
+- **HsmProviderFactory** - Config-driven factory with credential validation
+- LocalStack support for AWS KMS development testing
+
+#### Security Audit Tooling (#444)
+- **SecurityAuditService** - Orchestrator for OWASP Top 10 security checks
+- `php artisan security:audit` command with `--format=json|text|table`, `--check`, `--min-score`, `--ci`
+- 8 automated checks: Dependency Vulnerability, Security Headers, SQL Injection, Authentication, Encryption, Rate Limiting, Input Validation, Sensitive Data Exposure
+- CI-compatible exit codes for pipeline integration
+
+---
+
 ## [2.9.0] - 2026-02-10
 
 ### 🧠 ML Anomaly Detection & Banking-as-a-Service

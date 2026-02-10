@@ -1103,6 +1103,7 @@ main ─────────●─────────●─────
 | **v2.7.0** | Mobile Payment API | Payment Intents, Receipts, Passkey Auth, P2P Transfers | ✅ Released 2026-02-08 |
 | **v2.8.0** | AI Query & RegTech | AI Transaction Queries, MiFID II, MiCA, Travel Rule | ✅ Released 2026-02-08 |
 | **v2.9.0** | BaaS & Production Hardening | ML Anomaly Detection, BaaS Implementation, SDK Generation | ✅ Released 2026-02-10 |
+| **v2.9.1** | Production Hardening | On-Chain SBT, snarkjs, AWS KMS, Azure Key Vault, Security Audit | ✅ Released 2026-02-10 |
 
 ---
 
@@ -1455,18 +1456,34 @@ GET    /api/v1/trustcert/verify/{token} # Verify presentation
 | Partner API Controllers | 5 controllers, 26 endpoints under `/api/partner/v1` | ✅ | #434 |
 | Integration Tests | End-to-end BaaS workflow tests | ✅ | #435 |
 
-### Phase 3: Production Hardening (Deferred to v3.0.0)
+### Phase 3: Production Hardening ✅ COMPLETE (v2.9.1)
 
-| Component | Description | Status |
-|-----------|-------------|--------|
-| Smart Contracts | Deploy TrustCert SBT on Polygon | Deferred to v3.0.0 |
-| ZK Circuits | Production snarkjs integration | Deferred to v3.0.0 |
-| HSM Integration | Real HSM provider (AWS CloudHSM/Azure) | Deferred to v3.0.0 |
-| Security Audit | Third-party audit (Trail of Bits) | Deferred to v3.0.0 |
+| Component | Description | Status | PR |
+|-----------|-------------|--------|-----|
+| On-Chain SBT | ERC-5192 Soulbound Token on Polygon via JSON-RPC | ✅ | #441 |
+| ZK Circuits | SnarkjsProverService, PoseidonHasher, ProductionMerkleTreeService | ✅ | #442 |
+| HSM Providers | AWS KMS + Azure Key Vault providers with HsmProviderFactory | ✅ | #443 |
+| Security Audit | `php artisan security:audit` with 8 OWASP checks | ✅ | #444 |
 
 ---
 
-*Document Version: 2.9.0*
+## Version 2.9.1 - Production Hardening ✅ RELEASED
+
+**Release Date**: February 10, 2026
+**Theme**: Production-grade implementations for smart contracts, ZK circuits, HSM, and security
+
+### Delivered
+
+| Feature | Description | PR |
+|---------|-------------|-----|
+| On-Chain SBT | ERC-5192 Soulbound Token minting/revoking on Polygon, opt-in via config | #441 |
+| snarkjs Integration | SnarkjsProverService wraps CLI for ZK proof generation, PoseidonHasher for Merkle hashing | #442 |
+| AWS KMS & Azure Key Vault | AwsKmsHsmProvider + AzureKeyVaultHsmProvider implementing HsmProviderInterface | #443 |
+| Security Audit Tooling | `php artisan security:audit` command with 8 OWASP Top 10 automated checks | #444 |
+
+---
+
+*Document Version: 2.9.1*
 *Created: January 11, 2026*
-*Updated: February 10, 2026 (v2.9.0 Released, Phase 3 Deferred to v3.0.0)*
+*Updated: February 10, 2026 (v2.9.1 Released — Phase 3 Production Hardening complete)*
 *Next Review: v3.0.0 Planning*
