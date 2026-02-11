@@ -159,7 +159,7 @@ parameters:
         - '#Parameter (\#\d+ )?\$[a-zA-Z]+ of class App\\Domain\\[a-zA-Z\\]+\\MCP\\Tools\\[a-zA-Z\\]+\\[a-zA-Z]+ constructor expects .+, Mockery\\MockInterface given#'
         # Null-safe property access on firstWhere/first results in tests
         - '#Cannot access property \$[a-zA-Z_]+ on App\\Domain\\[a-zA-Z\\]+\\Models\\[a-zA-Z]+\|null#'
-        - '#Access to an undefined property PHPUnit\\Framework\\TestCase::\$(app|user|business_user|account|positionId|ownerId|service|device|shamirService|request|userUuid|hsm|encryption|adapter|tool|nlpService|analyzerService|keyPair|merchantLookup|feeEstimation|merchant|jurisdictionService|orchestrationService|micaService)#'
+        - '#Access to an undefined property PHPUnit\\Framework\\TestCase::\$(app|user|business_user|account|positionId|ownerId|service|device|shamirService|request|userUuid|hsm|encryption|adapter|tool|nlpService|analyzerService|keyPair|merchantLookup|feeEstimation|merchant|jurisdictionService|orchestrationService|micaService|domainManager|routeLoader|dependencyResolver)#'
         - '#Call to an undefined static method PHPUnit\\Framework\\TestCase::uses\(\)#'
         - '#Call to function (it|test|expect|beforeEach|afterEach|beforeAll|afterAll|dataset|uses|covers|group|skip|todo)\(\) not found#'
         - '#Function method_exists\(\) with .* and .* will always evaluate to true#'

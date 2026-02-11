@@ -5,6 +5,50 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.0] - 2026-02-11
+
+### Added
+
+#### Module Manifests (Phase 1)
+- Complete `module.json` manifests for all **41 domain modules** with schema, dependencies, interfaces, events, and commands
+- `module:enable` and `module:disable` artisan commands with `config/modules.php` configuration
+
+#### Modular Route Loading (Phase 2)
+- **ModuleRouteLoader** extracts monolithic `routes/api.php` (1,646 lines) into **24 per-domain route files**, loaded automatically via `DomainServiceProvider`
+- `routes/api.php` reduced from 1,646 to ~240 lines (thin orchestrator pattern)
+
+#### Module Management API (Phase 3)
+- REST endpoints at `/api/v2/modules` for listing, inspecting, enabling/disabling, and verifying modules
+- Admin-only write operations with proper authorization
+
+#### Filament Module Admin (Phase 4)
+- Custom admin page at `/admin/modules` with search, status/type filters, enable/disable/verify actions
+- **Module Health Widget** — stats overview widget showing total modules, manifest coverage, disabled count, and type breakdown
+
+#### Performance & Load Testing (Phase 5)
+- **k6 Load Test Suite** — smoke (1 VU), load (50 VUs), and stress (100 VUs) scenarios at `tests/k6/`
+- **Query Performance Middleware** — detects slow queries and N+1 patterns with configurable thresholds via `config/performance.php`
+- `performance:report` artisan command generates JSON/markdown baseline reports
+
+#### DevOps & Governance (Phase 6)
+- **Dependabot Configuration** — weekly updates for Composer, npm, and GitHub Actions
+- **GitHub Issue Templates** — structured YAML forms for bug reports and feature requests
+- **Pull Request Template** — checklist with type-of-change, test plan, and contributing guidelines
+- **SPDX License Headers** — Apache-2.0 identifiers on key source files
+- **Plugin Architecture Documentation** — README section and CONTRIBUTING module development guide
+- **Integration Tests** — plugin system integration tests covering manifests, dependencies, enable/disable flow
+
+### Changed
+- `routes/api.php` reduced from 1,646 to ~240 lines (thin orchestrator pattern)
+- `config/event-sourcing.php` narrowed auto-discovery to specific directories (fixes phantom route loading)
+- `bootstrap/app.php` registered `query.performance` middleware alias
+- README version badge updated to 3.2.0, domain count updated to 41
+
+### Fixed
+- Fixed Spatie Event Sourcing auto-discovery scanning entire `app/` directory, which caused route files to be loaded without API prefix
+
+---
+
 ## [v3.1.0] - 2026-02-11
 
 ### Theme: Consolidation, Documentation & UI Completeness
