@@ -51,6 +51,13 @@ class DomainServiceProvider extends ServiceProvider
                 domainBasePath: 'app/Domain',
             );
         });
+
+        $this->app->singleton(ModuleRouteLoader::class, function ($app) {
+            return new ModuleRouteLoader(
+                domainManager: $app->make(DomainManager::class),
+                domainBasePath: 'app/Domain',
+            );
+        });
     }
 
     /**
@@ -73,6 +80,7 @@ class DomainServiceProvider extends ServiceProvider
         return [
             DependencyResolver::class,
             DomainManager::class,
+            ModuleRouteLoader::class,
         ];
     }
 }
