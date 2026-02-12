@@ -6,7 +6,9 @@ namespace App\Console\Commands;
 
 use App\Domain\Monitoring\Services\EventStoreService;
 use Illuminate\Console\Command;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
+use Spatie\EventSourcing\EventHandlers\Projectors\Projector;
 use Spatie\EventSourcing\Facades\Projectionist;
 
 class EventReplayCommand extends Command
@@ -45,6 +47,29 @@ class EventReplayCommand extends Command
             $this->warn('DRY RUN - No events will be replayed.');
         }
 
+        // Validate projector class if provided
+        if ($projectorClass) {
+            if (! str_starts_with($projectorClass, 'App\\')) {
+                $this->error("Invalid projector class: {$projectorClass} (must be in App\\ namespace)");
+
+                return Command::FAILURE;
+            }
+
+            if (! class_exists($projectorClass)) {
+                $this->error("Projector class not found: {$projectorClass}");
+
+                return Command::FAILURE;
+            }
+
+            if (! is_subclass_of($projectorClass, Projector::class)) {
+                $this->error("Class is not a Projector: {$projectorClass}");
+
+                return Command::FAILURE;
+            }
+
+            $this->info("Projector filter: {$projectorClass}");
+        }
+
         // Validate domain if provided
         if ($domain) {
             $eventTable = $eventStoreService->resolveEventTable($domain);
@@ -62,10 +87,6 @@ class EventReplayCommand extends Command
             $allStats = $eventStoreService->getAllStats();
             $totalEvents = $allStats['summary']['total_events'] ?? 0;
             $this->info("Replaying all events ({$totalEvents} total)");
-        }
-
-        if ($projectorClass) {
-            $this->info("Projector filter: {$projectorClass}");
         }
 
         if ($from) {
@@ -89,16 +110,40 @@ class EventReplayCommand extends Command
 
         $this->info('Starting event replay...');
 
-        DB::transaction(function () use ($projectorClass) {
-            if ($projectorClass && class_exists($projectorClass)) {
-                Projectionist::replay(collect([app($projectorClass)]));
-            } else {
-                Projectionist::replay(Projectionist::getProjectors());
-            }
+        // Determine which projectors to replay
+        $projectors = $this->resolveProjectors($projectorClass, $domain);
+
+        DB::transaction(function () use ($projectors) {
+            Projectionist::replay($projectors);
         });
 
         $this->info('Event replay completed successfully.');
 
         return Command::SUCCESS;
+    }
+
+    /**
+     * Resolve projectors based on filters.
+     *
+     * @return Collection<int, mixed>
+     */
+    private function resolveProjectors(?string $projectorClass, ?string $domain): Collection
+    {
+        if ($projectorClass) {
+            return collect([app($projectorClass)]);
+        }
+
+        $projectors = Projectionist::getProjectors();
+
+        // Filter by domain namespace if --domain is specified
+        if ($domain) {
+            $domainNamespace = "App\\Domain\\{$domain}\\";
+
+            return $projectors->filter(
+                fn (object $projector) => str_starts_with($projector::class, $domainNamespace)
+            );
+        }
+
+        return $projectors;
     }
 }

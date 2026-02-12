@@ -5,6 +5,18 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.3.2] - 2026-02-12
+
+### Fixed
+- **Compliance routes**: Fixed `POST /api/compliance/cases` and `POST /api/compliance/alerts` mapping to non-existent `create` method — domain route file now correctly references `store` method
+- **TransactionMonitoring routes**: Fixed `GET /api/transaction-monitoring/patterns` and `GET /api/transaction-monitoring/thresholds` returning 404 — moved `/{id}` wildcard route after static routes to prevent route shadowing
+- **EventReplayCommand**: Added projector class namespace validation (must be `App\` namespace) and Projector subclass check to prevent arbitrary class instantiation
+- **EventReplayCommand**: Fixed `--domain` filter not being applied during replay — `resolveProjectors()` now filters projectors by domain namespace
+
+### Changed
+- `event:replay --projector` now validates class exists, is in `App\` namespace, and extends `Spatie\EventSourcing\EventHandlers\Projectors\Projector`
+- `event:replay --domain` now filters projectors to only replay those in the matching `App\Domain\{domain}\` namespace
+
 ## [3.3.1] - 2026-02-12
 
 ### Fixed

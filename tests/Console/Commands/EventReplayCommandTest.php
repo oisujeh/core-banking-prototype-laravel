@@ -34,11 +34,16 @@ describe('EventReplayCommand', function () {
             ->assertSuccessful();
     });
 
-    it('shows dry run with projector filter', function () {
-        $this->artisan('event:replay --projector=SomeProjector --dry-run')
-            ->expectsOutput('DRY RUN - No events will be replayed.')
-            ->expectsOutput('Projector filter: SomeProjector')
-            ->assertSuccessful();
+    it('rejects projector outside App namespace', function () {
+        $this->artisan('event:replay', ['--projector' => 'SomeProjector', '--dry-run' => true])
+            ->expectsOutput('Invalid projector class: SomeProjector (must be in App\\ namespace)')
+            ->assertFailed();
+    });
+
+    it('rejects non-existent projector class', function () {
+        $this->artisan('event:replay', ['--projector' => 'App\\Domain\\Fake\\Projectors\\FakeProjector', '--dry-run' => true])
+            ->expectsOutput('Projector class not found: App\\Domain\\Fake\\Projectors\\FakeProjector')
+            ->assertFailed();
     });
 
     it('fails for unknown domain', function () {
