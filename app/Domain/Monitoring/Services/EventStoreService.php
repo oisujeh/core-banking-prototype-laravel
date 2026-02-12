@@ -330,6 +330,22 @@ class EventStoreService
     }
 
     /**
+     * Resolve domain name by event table name (reverse lookup).
+     */
+    public function resolveDomainByEventTable(string $eventTable): ?string
+    {
+        $map = $this->getDomainTableMap();
+
+        foreach ($map as $domain => $tables) {
+            if ($tables['event_table'] === $eventTable) {
+                return $domain;
+            }
+        }
+
+        return null;
+    }
+
+    /**
      * Get events per minute for a given table over the last N minutes.
      *
      * @return array<string, int>
