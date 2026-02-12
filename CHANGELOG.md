@@ -5,6 +5,19 @@ All notable changes to the FinAegis Core Banking Platform will be documented in 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [3.2.1] - 2026-02-12
+
+### Fixed
+- Fixed GitLeaks false positives for developer documentation Blade views containing placeholder API keys in code examples
+
+### Changed
+- Updated 14 dependencies to latest minor/patch versions:
+  - **Composer**: aws/aws-sdk-php 3.369.32, larastan/larastan 3.9.2, laravel/dusk 8.3.6, laravel/telescope 5.17.0, laravel/tinker 2.11.1, meilisearch/meilisearch-php 1.16.1, dmore/behat-chrome-extension 1.4.1
+  - **npm**: postcss 8.5.6, @tailwindcss/typography 0.5.19
+  - **GitHub Actions**: actions/cache v5, actions/download-artifact v7, github/codeql-action v4, azure/k8s-set-context v4, azure/setup-helm v4
+
+---
+
 ## [3.2.0] - 2026-02-11
 
 ### Added
