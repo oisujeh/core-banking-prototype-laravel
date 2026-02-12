@@ -13,7 +13,7 @@ Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('compliance'
     // Compliance alerts
     Route::prefix('alerts')->group(function () {
         Route::get('/', [ComplianceAlertController::class, 'index']);
-        Route::post('/', [ComplianceAlertController::class, 'create']);
+        Route::post('/', [ComplianceAlertController::class, 'store']);
         Route::get('/statistics', [ComplianceAlertController::class, 'statistics']);
         Route::get('/trends', [ComplianceAlertController::class, 'trends']);
         Route::get('/{alert}', [ComplianceAlertController::class, 'show']);
@@ -29,7 +29,7 @@ Route::middleware('auth:sanctum', 'check.token.expiration')->prefix('compliance'
     // Compliance cases
     Route::prefix('cases')->group(function () {
         Route::get('/', [ComplianceCaseController::class, 'index']);
-        Route::post('/', [ComplianceCaseController::class, 'create']);
+        Route::post('/', [ComplianceCaseController::class, 'store']);
         Route::get('/{case}', [ComplianceCaseController::class, 'show']);
         Route::put('/{case}', [ComplianceCaseController::class, 'update']);
         Route::delete('/{case}', [ComplianceCaseController::class, 'destroy']);
