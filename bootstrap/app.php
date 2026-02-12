@@ -76,6 +76,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'tenant' => App\Http\Middleware\InitializeTenancyByTeam::class,
             // Performance monitoring middleware
             'query.performance' => App\Http\Middleware\QueryPerformanceMiddleware::class,
+            // Structured logging middleware (v3.3.0)
+            'structured.logging' => App\Http\Middleware\StructuredLoggingMiddleware::class,
         ]);
 
         // Prepend CORS middleware to handle it before other middleware
