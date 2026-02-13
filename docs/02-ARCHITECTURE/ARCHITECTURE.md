@@ -1,7 +1,7 @@
 # FinAegis Platform Architecture
 
-**Version:** 8.0
-**Last Updated:** December 2024
+**Version:** 5.0.0
+**Last Updated:** February 2026
 **Status:** Demonstration Prototype
 
 This document provides a comprehensive overview of the FinAegis Platform architecture, design patterns, and implementation details. The platform delivers the Global Currency Unit (GCU) as its flagship product alongside modular sub-products: Exchange, Lending, Stablecoins, and Treasury.
@@ -31,7 +31,7 @@ This document provides a comprehensive overview of the FinAegis Platform archite
 ┌─────────────────────────────────────────────────────────────────────┐
 │                           Presentation Layer                        │
 ├─────────────────────────────────────────────────────────────────────┤
-│  Web UI (Filament)  │  REST API  │  GraphQL (Planned)  │  CLI       │
+│  Web UI (Filament)  │  REST API  │  GraphQL (14 domains)  │  CLI       │
 ├─────────────────────────────────────────────────────────────────────┤
 │                          Application Layer                          │
 ├─────────────────────────────────────────────────────────────────────┤

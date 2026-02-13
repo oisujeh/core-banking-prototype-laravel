@@ -1,7 +1,7 @@
 # FinAegis Development Continuation Guide
 
 > **Purpose**: Master handoff document for session continuity. **READ THIS FIRST** when resuming development.
-> **Last Updated**: February 13, 2026 (v4.0.0 Released — Architecture Evolution)
+> **Last Updated**: February 13, 2026 (v5.0.0 Released — Event Streaming, Live Dashboard, Notifications, API Gateway)
 
 ---
 
@@ -26,7 +26,7 @@ git branch --show-current
 | Current Branch | `main` |
 | Open PRs | None |
 | Open Issues | None |
-| Last Action | v4.0.0 Released — Architecture Evolution (Event Store v2, GraphQL API, Plugin Marketplace) PRs #517-#523 |
+| Last Action | v5.0.0 Released — Event Streaming (Redis Streams), Live Dashboard (5 metrics endpoints), Notification System (5 channels), API Gateway Middleware |
 
 ---
 
@@ -61,16 +61,23 @@ app/Domain/
 ```
 
 ### Patterns
-- **Event Sourcing**: Spatie v7.7+ with domain-specific tables
+- **Event Sourcing**: Spatie v7.7+ with domain-specific tables, Event Store v2 (domain routing, upcasting)
 - **CQRS**: Custom bus in `app/Infrastructure/`
 - **Sagas**: Laravel Workflow with compensation
 - **DDD**: Aggregates, Value Objects, Domain Events
+- **GraphQL API**: Lighthouse-PHP, 14 domains (Account, Wallet, Exchange, Compliance, Lending, Treasury, Stablecoin, Fraud, Banking, Mobile, TrustCert + more), subscriptions, DataLoaders
+- **Event Streaming**: Redis Streams publisher/consumer for real-time event distribution
+- **Plugin Marketplace**: PluginManager with semver dependency resolver, permission sandbox, security scanner
+- **Live Dashboard**: 5 metrics endpoints for real-time system monitoring
+- **Notification System**: 5 channels for alerts and notifications
+- **API Gateway Middleware**: Centralized request routing, rate limiting, auth
 
 ### Stack
 - PHP 8.4+ / Laravel 12
-- MySQL 8.0 / Redis
-- Pest PHP / PHPStan Level 8
+- MySQL 8.0 / Redis (+ Redis Streams for event streaming)
+- Pest PHP (775+ test files, 6300+ tests) / PHPStan Level 8
 - Filament 3.0 / Livewire
+- Lighthouse-PHP (GraphQL)
 
 ---
 
