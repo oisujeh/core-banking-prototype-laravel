@@ -80,7 +80,7 @@ app/Domain/
 
 ### 5. GraphQL API (v4.0.0+)
 - **Lighthouse-PHP** foundation with custom @tenant directive
-- 14 domains: Account, Wallet, Exchange, Compliance, Lending, Treasury, Stablecoin, Fraud, Banking, Mobile, TrustCert, and more
+- 24 domains: Account, AI, Asset, Banking, Commerce, Compliance, CrossChain, Custodian, DeFi, Exchange, Fraud, Governance, KeyManagement, Lending, Mobile, MobilePayment, Payment, Privacy, RegTech, Relayer, Stablecoin, Treasury, TrustCert, Wallet
 - DataLoaders for N+1 prevention, real-time subscriptions
 - GraphQL security middleware (depth limiting, complexity analysis)
 

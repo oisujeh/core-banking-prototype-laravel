@@ -115,7 +115,7 @@
 
 ### v4.0.0 -- Architecture Evolution
 - Event Store v2 (domain routing, migration tooling, upcasting)
-- GraphQL API (Lighthouse PHP, 14 domain schemas, subscriptions, DataLoaders)
+- GraphQL API (Lighthouse PHP, 24 domain schemas, subscriptions, DataLoaders)
 - Plugin Marketplace (manager, sandbox, security scanner)
 
 ### v5.0.0 -- Event Streaming & Live Dashboard (Current)

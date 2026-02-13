@@ -186,7 +186,7 @@
                     <div class="flex flex-wrap items-center justify-center gap-3 mb-6">
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
-                            <span>REST API v3.0</span>
+                            <span>REST API v5.0</span>
                         </span>
                         <span class="inline-flex items-center px-4 py-2 bg-green-500/20 backdrop-blur-sm rounded-full text-sm">
                             <span class="w-2 h-2 bg-green-400 rounded-full mr-2"></span>
@@ -599,7 +599,7 @@ curl -X POST https://api.finaegis.org/api/v1/partner/sdk/generate \
   -H "Content-Type: application/json" \
   -d '{
     "languages": ["typescript", "python", "java", "go", "php"],
-    "api_version": "v3",
+    "api_version": "v5",
     "include_modules": ["accounts", "transfers", "crosschain", "defi", "compliance"],
     "options": {
       "include_types": true,
@@ -616,38 +616,38 @@ curl -X POST https://api.finaegis.org/api/v1/partner/sdk/generate \
     "packages": [
       {
         "language": "typescript",
-        "version": "3.0.0",
+        "version": "5.0.0",
         "package_name": "@finaegis/sdk",
-        "download_url": "https://sdk.finaegis.org/packages/typescript/finaegis-sdk-3.0.0.tgz",
-        "install_command": "npm install @finaegis/sdk@3.0.0"
+        "download_url": "https://sdk.finaegis.org/packages/typescript/finaegis-sdk-5.0.0.tgz",
+        "install_command": "npm install @finaegis/sdk@5.0.0"
       },
       {
         "language": "python",
-        "version": "3.0.0",
+        "version": "5.0.0",
         "package_name": "finaegis-sdk",
-        "download_url": "https://sdk.finaegis.org/packages/python/finaegis-sdk-3.0.0.tar.gz",
-        "install_command": "pip install finaegis-sdk==3.0.0"
+        "download_url": "https://sdk.finaegis.org/packages/python/finaegis-sdk-5.0.0.tar.gz",
+        "install_command": "pip install finaegis-sdk==5.0.0"
       },
       {
         "language": "java",
-        "version": "3.0.0",
+        "version": "5.0.0",
         "package_name": "com.finaegis:sdk",
-        "download_url": "https://sdk.finaegis.org/packages/java/finaegis-sdk-3.0.0.jar",
-        "install_command": "mvn install com.finaegis:sdk:3.0.0"
+        "download_url": "https://sdk.finaegis.org/packages/java/finaegis-sdk-5.0.0.jar",
+        "install_command": "mvn install com.finaegis:sdk:5.0.0"
       },
       {
         "language": "go",
-        "version": "3.0.0",
+        "version": "5.0.0",
         "package_name": "github.com/finaegis/sdk-go",
-        "download_url": "https://sdk.finaegis.org/packages/go/finaegis-sdk-go-3.0.0.tar.gz",
-        "install_command": "go get github.com/finaegis/sdk-go@v3.0.0"
+        "download_url": "https://sdk.finaegis.org/packages/go/finaegis-sdk-go-5.0.0.tar.gz",
+        "install_command": "go get github.com/finaegis/sdk-go@v5.0.0"
       },
       {
         "language": "php",
-        "version": "3.0.0",
+        "version": "5.0.0",
         "package_name": "finaegis/sdk",
-        "download_url": "https://sdk.finaegis.org/packages/php/finaegis-sdk-3.0.0.zip",
-        "install_command": "composer require finaegis/sdk:^3.0"
+        "download_url": "https://sdk.finaegis.org/packages/php/finaegis-sdk-5.0.0.zip",
+        "install_command": "composer require finaegis/sdk:^5.0"
       }
     ]
   }
@@ -660,31 +660,31 @@ curl -X POST https://api.finaegis.org/api/v1/partner/sdk/generate \
                         <div>
                             <p class="text-sm font-medium text-gray-700 mb-2">TypeScript / JavaScript</p>
                             <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
-                                <code>npm install @finaegis/sdk@3.0.0</code>
+                                <code>npm install @finaegis/sdk@5.0.0</code>
                             </div>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-700 mb-2">Python</p>
                             <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
-                                <code>pip install finaegis-sdk==3.0.0</code>
+                                <code>pip install finaegis-sdk==5.0.0</code>
                             </div>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-700 mb-2">Java (Maven)</p>
                             <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
-                                <code>mvn install com.finaegis:sdk:3.0.0</code>
+                                <code>mvn install com.finaegis:sdk:5.0.0</code>
                             </div>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-700 mb-2">Go</p>
                             <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
-                                <code>go get github.com/finaegis/sdk-go@v3.0.0</code>
+                                <code>go get github.com/finaegis/sdk-go@v5.0.0</code>
                             </div>
                         </div>
                         <div>
                             <p class="text-sm font-medium text-gray-700 mb-2">PHP (Composer)</p>
                             <div class="bg-gray-900 rounded-lg p-4 font-mono text-green-400 text-sm">
-                                <code>composer require finaegis/sdk:^3.0</code>
+                                <code>composer require finaegis/sdk:^5.0</code>
                             </div>
                         </div>
                     </div>
@@ -754,7 +754,7 @@ client = FinAegis(
                         <div class="bg-gradient-to-r from-cyan-600 to-teal-600 px-6 py-4">
                             <div class="flex items-center">
                                 <span class="w-8 h-8 bg-white text-cyan-600 rounded-full flex items-center justify-center font-bold text-sm mr-3">2</span>
-                                <h3 class="text-lg font-semibold text-white">Access Cross-Chain and DeFi Modules (v3.0)</h3>
+                                <h3 class="text-lg font-semibold text-white">Access Cross-Chain and DeFi Modules (v5.0)</h3>
                             </div>
                         </div>
                         <div class="p-6">
@@ -919,12 +919,12 @@ console.log('Total volume:', insights.data.analytics.total_volume);</pre>
                             <div class="border border-gray-200 rounded-lg p-4">
                                 <h4 class="font-semibold text-gray-900 mb-1">client.crosschain</h4>
                                 <p class="text-sm text-gray-600">Bridge protocols, multi-chain portfolio</p>
-                                <span class="text-xs text-gray-400">v3.0+</span>
+                                <span class="text-xs text-gray-400">v5.0+</span>
                             </div>
                             <div class="border border-gray-200 rounded-lg p-4">
                                 <h4 class="font-semibold text-gray-900 mb-1">client.defi</h4>
                                 <p class="text-sm text-gray-600">DEX aggregation, lending, staking, yield</p>
-                                <span class="text-xs text-gray-400">v3.0+</span>
+                                <span class="text-xs text-gray-400">v5.0+</span>
                             </div>
                             <div class="border border-gray-200 rounded-lg p-4">
                                 <h4 class="font-semibold text-gray-900 mb-1">client.ai</h4>
