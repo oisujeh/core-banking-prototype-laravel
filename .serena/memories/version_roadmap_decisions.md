@@ -78,12 +78,23 @@
 
 ---
 
-## Completed Versions (Summary)\n\n- **v2.9.0** (Feb 10, 2026): ML Anomaly Detection & BaaS (Statistical/Behavioral/Velocity/Geo anomaly detection, Partner SDKs, Billing, Widgets, Marketplace, 26 Partner API endpoints)\n- **v2.7.0** (Feb 8, 2026): Mobile Payment API & Enhanced Authentication (Payment Intents, Passkey Auth, P2P Transfer Helpers, TrustCert Export, Security Hardening)\n- **v2.6.0** (Feb 2, 2026): Privacy Layer & ERC-4337 (Merkle Trees, Smart Accounts, Delegated Proofs, UserOp Signing with Biometric JWT, Production-Ready Gas Station)\n- **v2.5.0**: Mobile App Launch (Expo/React Native)\n- **v2.4.0**: Privacy & Identity (Key Management, ZK-KYC, Commerce, TrustCert)\n- **v2.3.0**: AI Framework, RegTech Foundation, BaaS Configuration\n- **v2.2.0**: Mobile Backend (Device Management, Biometrics, Push Notifications)\n- **v2.1.0**: Security Hardening, Hardware Wallets, WebSocket, Kubernetes\n- **v2.0.0**: Multi-Tenancy with Team-Based Isolation\n\n### Next Planned\n- **v2.9.1** (Feb 10, 2026): Production Hardening (On-Chain SBT, snarkjs, AWS KMS, Azure Key Vault, Security Audit)
+## Completed Versions (Summary)
+
+- **v2.9.0** (Feb 10, 2026): ML Anomaly Detection & BaaS (Statistical/Behavioral/Velocity/Geo anomaly detection, Partner SDKs, Billing, Widgets, Marketplace, 26 Partner API endpoints)
+- **v2.7.0** (Feb 8, 2026): Mobile Payment API & Enhanced Authentication (Payment Intents, Passkey Auth, P2P Transfer Helpers, TrustCert Export, Security Hardening)
+- **v2.6.0** (Feb 2, 2026): Privacy Layer & ERC-4337 (Merkle Trees, Smart Accounts, Delegated Proofs, UserOp Signing with Biometric JWT, Production-Ready Gas Station)
+- **v2.5.0**: Mobile App Launch (Expo/React Native)
+- **v2.4.0**: Privacy & Identity (Key Management, ZK-KYC, Commerce, TrustCert)
+- **v2.3.0**: AI Framework, RegTech Foundation, BaaS Configuration
+- **v2.2.0**: Mobile Backend (Device Management, Biometrics, Push Notifications)
+- **v2.1.0**: Security Hardening, Hardware Wallets, WebSocket, Kubernetes
+- **v2.0.0**: Multi-Tenancy with Team-Based Isolation
+
+- **v2.9.1** (Feb 10, 2026): Production Hardening (On-Chain SBT, snarkjs, AWS KMS, Azure Key Vault, Security Audit)
 - **v2.10.0** (Feb 10, 2026): Mobile API Compatibility (~30 mobile-facing API endpoints)
 - **v3.0.0** (Feb 10, 2026): Cross-Chain & DeFi (Bridge protocols: Wormhole/LayerZero/Axelar, DeFi: Uniswap/Aave/Curve/Lido, cross-chain swaps, multi-chain portfolio)
+- **v3.1.0** (Feb 11, 2026): Consolidation, Documentation & UI Completeness (8 phases, PRs #456-#465)
 
-### Next Planned
-- **v3.1.0** (Feb 11, 2026): Consolidation, Documentation & UI Completeness — Swagger annotations, 7 feature pages, 15 Filament admin resources, 4 user-facing views, developer portal update (8 phases, PRs #456-#465)
 - **v3.2.0 — Production Readiness & Plugin Architecture (COMPLETED)
 Status: Released (2026-02-11)
 Phases: 6 phases across 6 PRs (#466-#471)
@@ -131,8 +142,42 @@ Key deliverables:
 - Plugin Marketplace: Permission sandbox, security scanner, marketplace REST API, Filament admin
 - 80+ tests across all features
 
+v4.1.0 — GraphQL Expansion & Projector Health (COMPLETED)
+Status: Released (2026-02-13)
+Key deliverables:
+- GraphQL API expansion to 10 domains (Account, Wallet, Exchange, Compliance, Lending, Treasury, Stablecoin + 3 more)
+- Projector health monitoring and management
+- DataLoader optimizations for N+1 prevention
+
+v4.2.0 — Real-Time Subscriptions & Plugin Hooks (COMPLETED)
+Status: Released (2026-02-13)
+Key deliverables:
+- Real-time GraphQL subscriptions for live data
+- Plugin hook system for extensibility
+- Webhook plugin and Audit plugin implementations
+
+v4.3.0 — GraphQL Security & Domain Expansion (COMPLETED)
+Status: Released (2026-02-13)
+Key deliverables:
+- GraphQL Fraud, Banking, Mobile, TrustCert domain schemas
+- CLI commands for GraphQL management
+- GraphQL security middleware (depth limiting, complexity analysis, introspection control)
+- Total GraphQL domains: 14
+
+v5.0.0 — Event Streaming, Live Dashboard, Notifications, API Gateway (COMPLETED — MAJOR)
+Status: Released (2026-02-13)
+Key deliverables:
+- Event Streaming: Redis Streams publisher/consumer for real-time event distribution
+- Live Dashboard: 5 metrics endpoints for real-time system monitoring
+- Notification System: 5 channels for alerts and notifications
+- API Gateway Middleware: Centralized request routing, rate limiting, authentication
+- 41 domains total, 775+ test files, 6300+ tests, PHPStan Level 8
+
 Future roadmap:
-- v4.1.0 — TBD (Laravel 13 upgrade when available, PHP 8.5 features)
+- v5.1.0 — TBD (Laravel 13 upgrade when available, PHP 8.5 features)
+
+---
+
 ## Architecture Principles (for decision-making)
 
 1. **Interface First**: Extract contracts before implementations

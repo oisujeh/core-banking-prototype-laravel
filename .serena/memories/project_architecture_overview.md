@@ -49,11 +49,14 @@ app/Domain/
 
 ## Key Architectural Patterns
 
-### 1. Event Sourcing
+### 1. Event Sourcing (Event Store v2 — v4.0.0+)
 - All major domains use event sourcing with dedicated event tables
 - Event projections for read models
 - Aggregates for business logic encapsulation
 - Example: `TransactionAggregate`, `StablecoinAggregate`
+- **Event Store v2**: EventRouter for namespace-based domain table routing (21 domains)
+- **Migration Tooling**: Batch migration with validation (event:migrate, event:migrate:rollback)
+- **Schema Evolution**: Chained upcasters (EventUpcastingService, EventVersionRegistry)
 
 ### 2. Workflow & Saga Pattern
 - Laravel Workflow with Waterline for complex operations
@@ -74,6 +77,27 @@ app/Domain/
 - Used for creating blockchain connectors
 - Supports multiple blockchains dynamically
 - Example: `BlockchainConnectorFactory`
+
+### 5. GraphQL API (v4.0.0+)
+- **Lighthouse-PHP** foundation with custom @tenant directive
+- 14 domains: Account, Wallet, Exchange, Compliance, Lending, Treasury, Stablecoin, Fraud, Banking, Mobile, TrustCert, and more
+- DataLoaders for N+1 prevention, real-time subscriptions
+- GraphQL security middleware (depth limiting, complexity analysis)
+
+### 6. Event Streaming (v5.0.0+)
+- **Redis Streams** publisher/consumer for real-time event distribution
+- Live Dashboard with 5 metrics endpoints for system monitoring
+- Notification System with 5 channels for alerts
+
+### 7. Plugin Marketplace (v4.0.0+)
+- PluginManager with semver dependency resolver
+- Permission sandbox, security scanner
+- Marketplace REST API, Filament admin panel, 6 Artisan commands
+
+### 8. API Gateway Middleware (v5.0.0+)
+- Centralized request routing and authentication
+- Rate limiting, request transformation
+- Unified API entry point
 
 ## Technology Stack
 
@@ -123,17 +147,23 @@ app/Domain/
 - Queue-based processing for heavy operations
 - Horizontal scaling support
 
-## Current Development Focus (v3.1.0)
-- **Documentation & UI Consolidation**: Swagger coverage, website features, developer portal
-- **Admin UI**: Filament resources for 15 new domains (CrossChain, DeFi, RegTech, Fraud, etc.)
-- **User-Facing UI**: Blade views for cross-chain, DeFi, privacy, trust certificates
+## Current Development Focus (v5.0.0)
+- **Event Streaming**: Redis Streams publisher/consumer for real-time event distribution
+- **Live Dashboard**: 5 metrics endpoints for real-time system monitoring
+- **Notification System**: 5 channels for alerts and notifications
+- **API Gateway Middleware**: Centralized request routing, rate limiting, auth
 
-### Recently Completed (v3.0.0)
-- CrossChain Domain: Bridge protocols (Wormhole, LayerZero, Axelar), cross-chain swaps, multi-chain portfolio
-- DeFi Domain: DEX aggregation (Uniswap, Aave, Curve, Lido), flash loans, position tracking
-- v2.10.0: Mobile API Compatibility (~30 endpoints)
-- v2.9.1: Production Hardening (On-Chain SBT, snarkjs, AWS KMS, Azure Key Vault)
-- v2.9.0: ML Anomaly Detection & BaaS Implementation
+### Recently Completed
+- v5.0.0: Event Streaming (Redis Streams), Live Dashboard, Notification System, API Gateway Middleware (MAJOR)
+- v4.3.0: GraphQL Fraud/Banking/Mobile/TrustCert domains, CLI commands, GraphQL security
+- v4.2.0: Real-time subscriptions, plugin hooks, webhook/audit plugins
+- v4.1.0: GraphQL expansion to 10 domains, projector health
+- v4.0.0: Event Store v2, GraphQL API (Lighthouse-PHP), Plugin Marketplace
+- v3.5.0: Compliance Certification (SOC 2, PCI DSS, Multi-Region, GDPR Enhanced)
+- v3.3.0: Event Store Optimization & Observability
+- v3.2.0: Production Readiness & Plugin Architecture
+- v3.1.0: Consolidation, Documentation & UI Completeness
+- v3.0.0: Cross-Chain & DeFi (Wormhole, LayerZero, Axelar, Uniswap, Aave, Curve, Lido)
 
 ### Historical Milestones
 - v1.1.0: PHPStan Level 8 compliance, 22 Behat E2E features
@@ -144,3 +174,9 @@ app/Domain/
 - v2.7.0: Mobile Payment API (Payment Intents, Passkeys, P2P Transfers)
 - v2.8.0: AI Query & RegTech (MiFID II, MiCA, Travel Rule)
 - v3.0.0: Cross-Chain & DeFi (Wormhole, LayerZero, Axelar, Uniswap, Aave, Curve, Lido)
+- v3.5.0: Compliance Certification (SOC 2 Type II, PCI DSS, Multi-Region, GDPR Enhanced)
+- v4.0.0: Architecture Evolution (Event Store v2, GraphQL API, Plugin Marketplace)
+- v4.1.0: GraphQL expansion to 10 domains, projector health
+- v4.2.0: Real-time subscriptions, plugin hooks, webhook/audit plugins
+- v4.3.0: GraphQL Fraud/Banking/Mobile/TrustCert domains, CLI commands, GraphQL security
+- v5.0.0: Event Streaming (Redis Streams), Live Dashboard, Notification System, API Gateway Middleware (MAJOR)
