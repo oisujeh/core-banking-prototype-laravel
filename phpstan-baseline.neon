@@ -7609,33 +7609,51 @@ parameters:
 			path: tests/Unit/Domain/Account/Actions/UnfreezeAccountTest.php
 
 		-
-			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:\$balance\.$#'
-			identifier: property.notFound
-			count: 1
+			message: '#^Parameter \#1 \$value of function expect contains unresolvable type\.$#'
+			identifier: argument.unresolvableType
+			count: 2
 			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
 
 		-
-			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:\$count\.$#'
-			identifier: property.notFound
-			count: 1
+			message: '#^Return type of call to function expect contains unresolvable type\.$#'
+			identifier: function.unresolvableReturnType
+			count: 2
 			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
 
 		-
 			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:credit\(\)\.$#'
 			identifier: method.notFound
-			count: 6
+			count: 14
 			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
 
 		-
 			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:debit\(\)\.$#'
 			identifier: method.notFound
-			count: 3
+			count: 5
+			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
+
+		-
+			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:\$balance\.$#'
+			identifier: property.notFound
+			count: 6
+			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
+
+		-
+			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:\$count\.$#'
+			identifier: property.notFound
+			count: 4
 			path: tests/Unit/Domain/Account/Aggregates/TransactionAggregateTest.php
 
 		-
 			message: '#^Call to an undefined method Spatie\\EventSourcing\\AggregateRoots\\FakeAggregateRoot\:\:transfer\(\)\.$#'
 			identifier: method.notFound
-			count: 7
+			count: 10
+			path: tests/Unit/Domain/Account/Aggregates/TransferAggregateTest.php
+
+		-
+			message: '#^Access to an undefined property Spatie\\EventSourcing\\AggregateRoots\\AggregateRoot\:\:\$count\.$#'
+			identifier: property.notFound
+			count: 3
 			path: tests/Unit/Domain/Account/Aggregates/TransferAggregateTest.php
 
 		-
