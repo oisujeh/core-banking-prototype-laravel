@@ -181,7 +181,7 @@
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
                     </svg>
                     <span class="font-medium">v5.0 Released:</span>
-                    <span class="ml-2">41 DDD domains, 1,189+ API routes with GraphQL API (14 domains), Event Streaming, Plugin Marketplace, CrossChain, DeFi, RegTech, and Partner BaaS.</span>
+                    <span class="ml-2">41 DDD domains, 1,189+ API routes with GraphQL API (24 domains), Event Streaming, Plugin Marketplace, CrossChain, DeFi, RegTech, and Partner BaaS.</span>
                 </div>
             </div>
         </section>
@@ -434,7 +434,7 @@
                     </div>
                 </div>
 
-                <!-- v2.0-v3.0 API Area Cards -->
+                <!-- Platform API Area Cards -->
                 <div class="mt-16">
                     <h3 class="text-2xl font-bold text-gray-900 mb-2 text-center">Platform API Areas</h3>
                     <p class="text-gray-600 text-center mb-8">Explore the full breadth of the FinAegis platform across 41 DDD domains</p>
@@ -566,10 +566,10 @@
                                     </div>
                                     <div>
                                         <h4 class="text-lg font-semibold text-gray-900">GraphQL API</h4>
-                                        <span class="text-xs text-gray-500">14 domains</span>
+                                        <span class="text-xs text-gray-500">24 domains</span>
                                     </div>
                                 </div>
-                                <p class="text-gray-600 text-sm mb-3">Schema-first GraphQL via Lighthouse PHP with queries, mutations, subscriptions, and DataLoaders across 14 domain schemas.</p>
+                                <p class="text-gray-600 text-sm mb-3">Schema-first GraphQL via Lighthouse PHP with queries, mutations, subscriptions, and DataLoaders across 24 domain schemas.</p>
                                 <span class="text-sky-600 text-sm font-medium group-hover:text-sky-700">View endpoints &rarr;</span>
                             </div>
                         </a>

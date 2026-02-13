@@ -162,7 +162,7 @@ Key deliverables:
 - GraphQL Fraud, Banking, Mobile, TrustCert domain schemas
 - CLI commands for GraphQL management
 - GraphQL security middleware (depth limiting, complexity analysis, introspection control)
-- Total GraphQL domains: 14
+- Total GraphQL domains: 24 (expanded from 14 in v4.3.0 to 24 with AI, Asset, Commerce, Custodian, Governance, KeyManagement, Privacy, RegTech, Relayer, Banking additions)
 
 v5.0.0 — Event Streaming, Live Dashboard, Notifications, API Gateway (COMPLETED — MAJOR)
 Status: Released (2026-02-13)

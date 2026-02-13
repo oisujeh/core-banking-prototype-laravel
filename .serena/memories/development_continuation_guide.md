@@ -65,7 +65,7 @@ app/Domain/
 - **CQRS**: Custom bus in `app/Infrastructure/`
 - **Sagas**: Laravel Workflow with compensation
 - **DDD**: Aggregates, Value Objects, Domain Events
-- **GraphQL API**: Lighthouse-PHP, 14 domains (Account, Wallet, Exchange, Compliance, Lending, Treasury, Stablecoin, Fraud, Banking, Mobile, TrustCert + more), subscriptions, DataLoaders
+- **GraphQL API**: Lighthouse-PHP, 24 domains (Account, AI, Asset, Banking, Commerce, Compliance, CrossChain, Custodian, DeFi, Exchange, Fraud, Governance, KeyManagement, Lending, Mobile, MobilePayment, Payment, Privacy, RegTech, Relayer, Stablecoin, Treasury, TrustCert, Wallet), subscriptions, DataLoaders
 - **Event Streaming**: Redis Streams publisher/consumer for real-time event distribution
 - **Plugin Marketplace**: PluginManager with semver dependency resolver, permission sandbox, security scanner
 - **Live Dashboard**: 5 metrics endpoints for real-time system monitoring
