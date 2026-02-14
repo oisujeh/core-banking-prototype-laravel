@@ -157,12 +157,12 @@ class CgoPaymentVerificationController extends Controller
             switch ($investment->payment_method) {
                 case 'bank_transfer':
                     // Send bank transfer instructions
-                    Mail::to($user->email)->send(new \App\Mail\CgoBankTransferInstructions($investment));
+                    Mail::to($user->email)->send(new \App\Domain\Cgo\Mail\CgoBankTransferInstructions($investment));
                     break;
 
                 case 'crypto':
                     // Send crypto payment instructions
-                    Mail::to($user->email)->send(new \App\Mail\CgoCryptoPaymentInstructions($investment));
+                    Mail::to($user->email)->send(new \App\Domain\Cgo\Mail\CgoCryptoPaymentInstructions($investment));
                     break;
             }
 
