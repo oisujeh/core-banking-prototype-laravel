@@ -55,10 +55,11 @@ jobs:
           
       - name: Install Dependencies
         run: |
-          # No database service in this job — skip all scripts (package:discover boots Laravel
-          # and attempts DB connections). Static analysis only needs vendor files + autoloader.
+          # Skip composer scripts during install (filament:upgrade needs full app context).
+          # Then run package:discover manually — it works with .env.testing (sqlite/array drivers).
           composer install --prefer-dist --no-progress --optimize-autoloader --no-scripts
-        
+          php artisan package:discover --ansi
+
       - name: Run PHP Code Sniffer
         run: vendor/bin/phpcs
         
