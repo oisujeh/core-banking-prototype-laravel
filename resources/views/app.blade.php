@@ -18,19 +18,8 @@
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=inter:300,400,500,600,700,800&display=swap" rel="stylesheet" />
 
-    {{-- Standalone Tailwind — this page must work without the Vite build pipeline --}}
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-    tailwind.config = {
-        theme: {
-            extend: {
-                fontFamily: {
-                    sans: ['Inter', 'ui-sans-serif', 'system-ui', 'sans-serif'],
-                },
-            },
-        },
-    }
-    </script>
+    {{-- Standalone Tailwind CSS — pre-compiled for this page only, no Vite dependency --}}
+    <link rel="stylesheet" href="/css/app-landing.css">
 
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-X65KH9NFMY"></script>
